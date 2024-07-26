@@ -7,41 +7,64 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // FORMATE THE DATA
-export const formatDate = (date: string, type: "full" | "date" | "time") => {
-  const dateTime = new Date(date)
+export function formatDate(dateString: string, type: "full" | "date" | "time"): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const yesterday = new Date()
+  yesterday.setDate(now.getDate() - 1)
 
-  const segments = new Intl.DateTimeFormat("ar-TN", {
-    dateStyle: "short",
-    timeStyle: "short"
-  })
-    .format(dateTime)
-    .split("، ")
+  const isToday = date.toDateString() === now.toDateString()
+  const isYesterday = date.toDateString() === yesterday.toDateString()
 
-  const today = () => new Date()
-  const yesterday = () => {
-    let d = new Date()
-    d.setDate(d.getDate() - 1)
-    return d
+  const optionsDate: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  }
+  const optionsTime: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric"
   }
 
-  // check if the day is today or yesterday
-  switch (dateTime.toISOString().split("T")[0]) {
-    case today().toISOString().split("T")[0]:
-      segments[0] = "اليوم"
-      break
-    case yesterday().toISOString().split("T")[0]:
-      segments[0] = "الأمس"
-      break
+  const formattedDate = date.toLocaleDateString("ar-EG", optionsDate)
+  const formattedTime = date.toLocaleTimeString("ar-EG", optionsTime)
+
+  if (isToday) {
+    if (type === "full") {
+      return `اليوم، ${formattedTime}`
+    }
+    if (type === "date") {
+      return "اليوم"
+    }
+    if (type === "time") {
+      return formattedTime
+    }
   }
 
-  switch (type) {
-    case "full":
-      return segments.join("، ")
-    case "date":
-      return segments[0]
-    case "time":
-      return segments[1]
+  if (isYesterday) {
+    if (type === "full") {
+      return `الأمس، ${formattedTime}`
+    }
+    if (type === "date") {
+      return "الأمس"
+    }
+    if (type === "time") {
+      return formattedTime
+    }
   }
+
+  if (type === "full") {
+    return `${formattedDate}، ${formattedTime}`
+  }
+  if (type === "date") {
+    return formattedDate
+  }
+  if (type === "time") {
+    return formattedTime
+  }
+
+  return ""
 }
 
 // GET THE INITIALS OF A NAME
