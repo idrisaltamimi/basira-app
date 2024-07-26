@@ -18,7 +18,6 @@ pub async fn get_payments_query(
     category: Option<String>,
 ) -> Result<Vec<Payment>> {
     let db = database().await?;
-    println!("backend running start");
 
     let mut sql = format!(
         r#"
@@ -67,7 +66,6 @@ pub async fn get_payments_query(
     let mut response: Response = db.query(&sql).await?;
     let payments: Vec<Payment> = response.take(0)?;
 
-    println!("backend running end");
     Ok(payments)
 }
 
