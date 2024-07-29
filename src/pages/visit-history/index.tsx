@@ -13,7 +13,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue
-} from "@/components/ui/select"
+} from "@/components/ui/shadcn/select"
 import { TextField } from "@/components"
 import { Label } from "@/components/ui/shadcn/label"
 import VisitFile from "./VisitFile"
