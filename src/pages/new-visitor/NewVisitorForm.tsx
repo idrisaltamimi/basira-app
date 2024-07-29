@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/shadcn/button"
 import { TextField } from "@/components/form/Textfield"
 import RadioInput from "@/components/form/RadioInput"
 import { useVisitor } from "@/hooks"
-import { DatePickerWrapper, Notification } from "@/components"
+import { DatePickerWrapper } from "@/components"
 import ReactDatePicker from "react-datepicker"
 import { Label } from "@/components/ui/shadcn/label"
 import { ImSpinner2 } from "react-icons/im"
+import { toast } from "@/components/ui/use-toast"
 
 import "react-datepicker/dist/react-datepicker.css"
 
@@ -55,6 +56,26 @@ export function NewVisitorForm() {
     createVisitor.mutate(data, {
       onSuccess: () => {
         setNewVisitor(visitor)
+        toast({
+          title: "تم إضافة الزائر بنجاح",
+          duration: 3000
+        })
+      },
+      onError: (error) => {
+        const civilIdErr = "visitor with the civil_id already exists"
+        if (error.message === civilIdErr) {
+          toast({
+            variant: "destructive",
+            title: "خطأ في الرقم المدني",
+            description: "يوجد زائر مسجل بهذا الرقم المدني"
+          })
+        } else {
+          toast({
+            variant: "destructive",
+            title: "!حدث خطأ ما! حاول مرة أخرى",
+            duration: 3000
+          })
+        }
       }
     })
   }
@@ -147,10 +168,10 @@ export function NewVisitorForm() {
           "افتح زيارة"
         )}
       </Button>
-      {createVisitor.isError && (
+      {/* {createVisitor.isError && (
         <Notification error message="!حدث خطأ ما! حاول مرة أخرى" />
       )}
-      {createVisitor.isSuccess && <Notification message="تم إضافة الزائر بنجاح" />}
+      {createVisitor.isSuccess && <Notification message="تم إضافة الزائر بنجاح" />} */}
     </form>
   )
 }
