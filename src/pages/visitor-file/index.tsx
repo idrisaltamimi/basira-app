@@ -1,5 +1,5 @@
 import VisitForm from "./VisitForm"
-import { calculateAge, surrealDbId } from "@/lib/utils"
+import { calculateAge } from "@/lib/utils"
 import { useRecord } from "@/hooks"
 import { useQuery } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -131,7 +131,7 @@ export default function VisitorFile() {
       </div>
       <div className="flex gap-4 p-4 mb-6 rounded-lg">
         <div className="p-4 mb-6 border shadow-sm rounded-3xl basis-2/3">
-          <VisitForm visitId={surrealDbId(visit?.id)} />
+          <VisitForm visit={visit} />
         </div>
         <div className="row-span-2 p-4 mb-6 border shadow-sm rounded-3xl basis-1/3 h-fit">
           <h2>السجل الطبي</h2>

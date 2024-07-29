@@ -5,16 +5,24 @@ import type { OpenVisits } from "@/lib/types"
 import { surrealDbId } from "@/lib/utils"
 
 import { usePayment } from "@/hooks"
-import { NewPayment } from "@/types/payment"
 import { Button } from "@/components/ui/shadcn/button"
 import { TextField, RadioInput, Modal, TooltipWrapper } from "@/components"
 import { Label } from "@/components/ui/shadcn/label"
 
-const initialPaymentForm: NewPayment = {
+const initialPaymentForm: {
+  name: string
+  payment_type: "payment" | "spending"
+  category: "visits" | "products" | "salaries" | "expenses"
+  amount: string
+  payment_method: "فيزا" | "كاش"
+  pending: boolean
+  visit_id: string
+} = {
   name: "زيارة",
   payment_type: "payment",
   category: "visits",
   amount: "",
+  payment_method: "فيزا",
   pending: true,
   visit_id: ""
 }
@@ -37,6 +45,7 @@ export default function AddPayment({ visit }: { visit: OpenVisits }) {
 
     const data = {
       ...paymentForm,
+      amount: parseFloat(paymentForm.amount),
       visit_id: surrealDbId(selectedVisit.id)
     }
     createNewPayment.mutate(data, {

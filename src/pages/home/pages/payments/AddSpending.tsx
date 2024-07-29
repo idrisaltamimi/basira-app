@@ -1,12 +1,23 @@
-import { FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useState } from "react"
 import { FaAddressCard } from "react-icons/fa6"
 
 import { Button } from "@/components/ui/shadcn/button"
 import usePayment from "@/hooks/usePayment"
 import { surrealDbId } from "@/lib/utils"
-import { Modal, Notification, TextField } from "@/components"
+import { Modal, Notification, RadioInput, TextField } from "@/components"
 import { useUser } from "@/hooks"
 import { useQueryClient } from "@tanstack/react-query"
+import { Label } from "@/components/ui/shadcn/label"
+
+const INITIAL_DATA: {
+  amount: string
+  payment_method: "كاش" | "فيزا"
+  name: string
+} = {
+  amount: "",
+  payment_method: "فيزا",
+  name: ""
+}
 
 export default function AddSpending({
   setRefetch
@@ -18,18 +29,23 @@ export default function AddSpending({
   const { userData } = useUser()
 
   const [isOpen, setIsOpen] = useState(false)
-  const [spendingAmount, setSpendingAmount] = useState("")
-  const [spendingName, setSpendingName] = useState("")
+  const [formData, setFormData] = useState(INITIAL_DATA)
+
+  const handleChange = (e: ChangeEvent) => {
+    const { value, name } = e.target as HTMLInputElement
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (!parseInt(spendingAmount)) return
+    if (!parseInt(formData.amount)) return
 
     createNewPayment.mutate(
       {
-        amount: spendingAmount,
-        name: spendingName,
+        amount: parseFloat(formData.amount),
+        payment_method: formData.payment_method as "فيزا" | "كاش",
+        name: formData.name,
         payment_type: "spending",
         category: "expenses",
         pending: false,
@@ -60,20 +76,40 @@ export default function AddSpending({
         open={isOpen}
       >
         <form onSubmit={handleSubmit}>
+          <div className="flex items-center gap-4 mt-2">
+            <Label>طريقة الدفع:</Label>
+            <RadioInput
+              label="فيزا"
+              id="visa"
+              name="payment_method"
+              value="فيزا"
+              checked={formData.payment_method === "فيزا"}
+              onChange={handleChange}
+            />
+            <RadioInput
+              label="كاش"
+              id="cash"
+              name="payment_method"
+              value="كاش"
+              checked={formData.payment_method === "كاش"}
+              onChange={handleChange}
+            />
+          </div>
+
           <TextField
             label="اسم المصروفات"
-            id="spending-amount"
-            value={spendingName}
-            onChange={(e) => setSpendingName(e.target.value)}
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
             required
           />
 
           <TextField
             label="حساب المصاريف"
-            id="spending-amount"
-            value={spendingAmount}
+            name="amount"
+            value={formData.amount}
             type="number"
-            onChange={(e) => setSpendingAmount(e.target.value)}
+            onChange={handleChange}
             required
           />
 

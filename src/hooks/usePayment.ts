@@ -1,4 +1,4 @@
-import { NewPayment, Payment, ProductPayment, UpdatePaymentData } from "@/types/payment"
+import { NewPayment, Payment, UpdatePaymentData } from "@/types/payment"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 
@@ -35,12 +35,8 @@ export default function usePayment() {
       try {
         const res = await invoke("create_payment", {
           data: {
-            payment_type: data.payment_type,
-            name: data.name?.toLocaleLowerCase(),
-            pending: data.pending,
-            category: data.category,
-            amount: parseFloat(data.amount),
-            visit_id: data.visit_id
+            ...data,
+            name: data.name?.toLocaleLowerCase()
           }
         })
         return res
@@ -56,7 +52,7 @@ export default function usePayment() {
   })
 
   const createProductPayments = useMutation({
-    mutationFn: async (data: ProductPayment) => {
+    mutationFn: async (data: NewPayment) => {
       try {
         const res = await invoke("create_products_payments", {
           data

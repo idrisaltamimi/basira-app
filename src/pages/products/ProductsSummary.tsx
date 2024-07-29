@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react"
 import { Label } from "@/components/ui/shadcn/label"
 import { Notification, TextField } from "@/components"
 import { Product } from "@/types/prodcut"
-import { ProductPayment } from "@/types/payment"
+import { NewPayment } from "@/types/payment"
 import {
   Select,
   SelectContent,
@@ -69,7 +69,7 @@ export default function ProductsSummary({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
-    const data: ProductPayment = {
+    const data: NewPayment = {
       payment_type: "payment",
       name: "شراء منتجات",
       category: "products",

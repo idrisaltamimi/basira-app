@@ -12,7 +12,6 @@ type PaymentType = {
 export type UpdatePaymentData = PaymentType
 
 export type NewPayment = PaymentType & {
-  amount: string
   pending: boolean
 }
 
@@ -21,8 +20,4 @@ export type Payment = PaymentType & {
   id: SurrealDbId
   visitor_name: string
   visitor_phone: string
-}
-
-export type ProductPayment = PaymentType & {
-  pending: boolean
 }

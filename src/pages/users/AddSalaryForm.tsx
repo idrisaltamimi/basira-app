@@ -7,20 +7,21 @@ import Modal from "@/components/ui/Modal"
 import { MdPayments } from "react-icons/md"
 import { usePayment } from "@/hooks"
 import { isValidNumber } from "@/lib/utils"
-import { Notification, TooltipWrapper } from "@/components"
+import { TooltipWrapper } from "@/components"
+import { toast } from "@/components/ui/use-toast"
 
 type AddSalaryDialogProps = {
   userId: string
   userName: string
 }
 
-type InitialSalaryDataType = {
+const INITIAL_SALARY_DATA: {
   amount: string
+  payment_method: "كاش" | "فيزا"
   salary_type: "يومي" | "شهري" | "علاوة"
-}
-
-const INITIAL_SALARY_DATA: InitialSalaryDataType = {
+} = {
   amount: "",
+  payment_method: "فيزا",
   salary_type: "يومي"
 }
 
@@ -29,11 +30,9 @@ export function AddSalaryForm({ userId, userName }: AddSalaryDialogProps) {
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [formData, setFormData] = useState(INITIAL_SALARY_DATA)
-  const [success, setSuccess] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setSuccess(false)
 
     if (!isValidNumber(formData.amount)) return
 
@@ -42,14 +41,17 @@ export function AddSalaryForm({ userId, userName }: AddSalaryDialogProps) {
         name: formData.salary_type,
         payment_type: "spending",
         category: "salaries",
-        amount: formData.amount,
+        amount: parseFloat(formData.amount),
+        payment_method: formData.payment_method as "فيزا" | "كاش",
         visit_id: userId,
         pending: false
       },
       {
         onSuccess: () => {
-          setSuccess(true)
           setFormData(INITIAL_SALARY_DATA)
+          toast({
+            title: "تم إضافة الراتب بنجاح"
+          })
           setDialogOpen(false)
         }
       }
@@ -105,6 +107,26 @@ export function AddSalaryForm({ userId, userName }: AddSalaryDialogProps) {
             />
           </div>
 
+          <div className="flex items-center gap-4 mt-2">
+            <Label>طريقة الدفع:</Label>
+            <RadioInput
+              label="فيزا"
+              id="visa"
+              name="payment_method"
+              value="فيزا"
+              checked={formData.payment_method === "فيزا"}
+              onChange={handleChange}
+            />
+            <RadioInput
+              label="كاش"
+              id="cash"
+              name="payment_method"
+              value="كاش"
+              checked={formData.payment_method === "كاش"}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="flex items-end gap-4">
             <div className="flex items-center gap-2 basis-full">
               <TextField
@@ -137,7 +159,6 @@ export function AddSalaryForm({ userId, userName }: AddSalaryDialogProps) {
           </div>
         </form>
       </Modal>
-      {success && <Notification message="تم إضافة الراتب بنجاح" />}
     </>
   )
 }

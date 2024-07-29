@@ -77,6 +77,9 @@ export default function useVisit() {
       } catch (error) {
         console.error(error)
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get_visit"] })
     }
   })
 

@@ -1,79 +1,83 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import CanvasDraw from "react-canvas-draw"
 import { LuUndo2 } from "react-icons/lu"
 import { MdDeleteForever } from "react-icons/md"
 import muscularSystem from "../../assets/muscular-system.jpg"
-import { compressToUTF16 } from "lz-string"
+import { compressToUTF16, decompressFromUTF16 } from "lz-string"
 
 import { TextField } from "@/components/form/Textfield"
 import { Textarea } from "@/components/ui/shadcn/textarea"
 import { Button } from "@/components/ui/shadcn/button"
-import usePayment from "@/hooks/usePayment"
 import { useUser, useVisit } from "@/hooks"
 import { surrealDbId } from "@/lib/utils"
-import { Notification } from "@/components"
-import { NewPayment } from "@/types/payment"
+import { Visit } from "@/types/visit"
+import { toast } from "@/components/ui/use-toast"
 
-const initialVisitData = {
+const INITIAL_FORM_DATA: {
+  treatment_img?: string
+  description?: string
+  treatment_type?: string
+  doctor_name?: string
+  prescription?: string
+  treatment_cost?: string
+  prescription_cost?: string
+  symptoms?: string
+} = {
   treatment_img: "",
   description: "",
   treatment_type: "",
   prescription: "",
   symptoms: "",
   treatment_cost: "",
-  prescription_cost: "",
-  doctor: ""
+  prescription_cost: ""
 }
 
-export default function VisitForm({ visitId }: { visitId: string }) {
+export default function VisitForm({ visit }: { visit: Visit | undefined }) {
   const { userData } = useUser()
-  const { createNewPayment } = usePayment()
   const { updateVisit } = useVisit()
 
   const { undo, clear, image, selectColor, color, canvasRef } = useCanvas()
-  const [visitForm, setVisitForm] = useState(initialVisitData)
-  const [success, setSuccess] = useState(false)
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA)
 
   const handleChange = (e: React.ChangeEvent) => {
     const { name, value } = e.target as HTMLInputElement
-    setVisitForm((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  useEffect(() => {
+    if (!visit) return
+    console.log("visit")
+    setFormData({
+      treatment_img: visit.treatment_img,
+      description: visit.description,
+      treatment_type: visit.treatment_type,
+      prescription: visit.prescription,
+      symptoms: visit.symptoms,
+      treatment_cost: visit.treatment_cost?.toString(),
+      prescription_cost: visit.prescription_cost?.toString()
+    })
+  }, [visit])
+  console.log(formData)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setSuccess(false)
-    const paymentData = (name: "زيارة" | string | "جلسة" | "أدوية"): NewPayment => ({
-      name: name,
-      payment_type: "payment",
-      category: "visits",
-      pending: true,
-      amount: name === "جلسة" ? visitForm.treatment_cost : visitForm.prescription_cost,
-      visit_id: visitId
-    })
-
-    if (visitForm.treatment_cost) {
-      createNewPayment.mutate(paymentData("جلسة"))
-    }
-    if (visitForm.prescription_cost) {
-      createNewPayment.mutate(paymentData("أدوية"))
-    }
 
     const visitData = {
       treatment_img: image(),
-      description: visitForm.description,
-      treatment_type: visitForm.treatment_type,
-      prescription: visitForm.prescription,
-      symptoms: visitForm.symptoms,
-      treatment_cost: parseFloat(visitForm.treatment_cost),
-      prescription_cost: parseFloat(visitForm.prescription_cost),
+      description: formData.description ?? "",
+      treatment_type: formData.treatment_type ?? "",
+      prescription: formData.prescription ?? "",
+      symptoms: formData.symptoms ?? "",
+      treatment_cost: parseFloat(formData?.treatment_cost ?? ""),
+      prescription_cost: parseFloat(formData?.prescription_cost ?? ""),
       doctor: surrealDbId(userData?.id),
-      visit_id: visitId
+      visit_id: surrealDbId(visit?.id)
     }
 
     updateVisit.mutate(visitData, {
       onSuccess: () => {
-        setSuccess(true)
-        // setVisitForm(initialVisitData)
+        toast({
+          title: "تم حفظ الزيارة بنجاح"
+        })
       }
     })
   }
@@ -85,36 +89,52 @@ export default function VisitForm({ visitId }: { visitId: string }) {
         <hr />
       </div>
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={undo} className="flex gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={undo}
+          className="flex gap-2"
+        >
           <LuUndo2 className="-scale-x-100" />
           تراجع
         </Button>
 
-        <Button variant="outline" size="sm" onClick={clear} className="flex gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={clear}
+          className="flex gap-2"
+        >
           <MdDeleteForever />
           حذف
         </Button>
 
         <div className="flex gap-1 mr-auto">
           <Button
+            type="button"
             size="icon"
             className="w-6 h-6 bg-black rounded-full"
             value="rgb(0, 0, 0)"
             onClick={selectColor}
           />
           <Button
+            type="button"
             size="icon"
             className="w-6 h-6 bg-red-700 rounded-full"
             value="rgb(185 28 28)"
             onClick={selectColor}
           />
           <Button
+            type="button"
             size="icon"
             className="w-6 h-6 bg-blue-700 rounded-full"
             value="rgb(29 78 216)"
             onClick={selectColor}
           />
           <Button
+            type="button"
             size="icon"
             className="w-6 h-6 bg-green-700 rounded-full"
             value="rgb(21 128 61)"
@@ -124,20 +144,36 @@ export default function VisitForm({ visitId }: { visitId: string }) {
       </div>
 
       <div className="relative bg-white w-[900px] h-[377.9px] mx-auto rounded-3xl">
-        <CanvasDraw
-          className="relative z-10"
-          ref={canvasRef}
-          backgroundColor="transparent"
-          hideGrid
-          brushColor={color}
-          catenaryColor={color}
-          brushRadius={2}
-          lazyRadius={0}
-          loadTimeOffset={0}
-          canvasWidth={900}
-          canvasHeight={377.9}
-          // saveData={decompress("")}
-        />
+        {formData.treatment_img ? (
+          <CanvasDraw
+            className="relative z-10"
+            ref={canvasRef}
+            backgroundColor="transparent"
+            hideGrid
+            brushColor={color}
+            catenaryColor={color}
+            brushRadius={2}
+            lazyRadius={0}
+            loadTimeOffset={0}
+            canvasWidth={900}
+            canvasHeight={377.9}
+            saveData={decompressFromUTF16(formData.treatment_img)}
+          />
+        ) : (
+          <CanvasDraw
+            className="relative z-10"
+            ref={canvasRef}
+            backgroundColor="transparent"
+            hideGrid
+            brushColor={color}
+            catenaryColor={color}
+            brushRadius={2}
+            lazyRadius={0}
+            loadTimeOffset={0}
+            canvasWidth={900}
+            canvasHeight={377.9}
+          />
+        )}
 
         <img
           src={muscularSystem}
@@ -151,10 +187,10 @@ export default function VisitForm({ visitId }: { visitId: string }) {
       <div className="flex flex-col gap-4 mt-6">
         <h2>التوضيحات</h2>
         <Textarea
-          id="description"
           name="description"
           placeholder=""
           className="mt-2 text-base font-normal text-black rounded-3xl"
+          value={formData.description}
           onChange={handleChange}
           required
         />
@@ -163,7 +199,7 @@ export default function VisitForm({ visitId }: { visitId: string }) {
           <TextField
             label="الأعراض التي يعاني منها المريض"
             name="symptoms"
-            value={visitForm.symptoms}
+            value={formData.symptoms}
             onChange={handleChange}
             required
           />
@@ -172,14 +208,14 @@ export default function VisitForm({ visitId }: { visitId: string }) {
           <TextField
             label="نوع العلاج"
             name="treatment_type"
-            value={visitForm.treatment_type}
+            value={formData.treatment_type}
             onChange={handleChange}
             required
           />
           <TextField
             label="اسم العلاج"
             name="prescription"
-            value={visitForm.prescription}
+            value={formData.prescription}
             onChange={handleChange}
             required
           />
@@ -190,7 +226,7 @@ export default function VisitForm({ visitId }: { visitId: string }) {
             label="حساب الجلسة"
             name="treatment_cost"
             type="number"
-            value={visitForm.treatment_cost}
+            value={formData.treatment_cost}
             onChange={handleChange}
             required
           />
@@ -198,7 +234,7 @@ export default function VisitForm({ visitId }: { visitId: string }) {
             label="حساب الأدوية"
             name="prescription_cost"
             type="number"
-            value={visitForm.prescription_cost}
+            value={formData.prescription_cost}
             onChange={handleChange}
             required
           />
@@ -206,7 +242,6 @@ export default function VisitForm({ visitId }: { visitId: string }) {
 
         <Button className="self-start mt-4 px-14">حفظ</Button>
       </div>
-      {success && <Notification message="تم حفظ الزيارة بنجاح" />}
     </form>
   )
 }
