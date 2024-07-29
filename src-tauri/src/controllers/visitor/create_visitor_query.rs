@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use surrealdb::Response;
 
 use crate::connect::database;
@@ -9,6 +9,17 @@ use crate::structs::visitor::{Visitor, VisitorData};
 #[tokio::main]
 pub async fn create_visitor_query(visitor: VisitorData) -> Result<Vec<Visitor>> {
     let db = database().await?;
+
+    if let Some(civil_id) = &visitor.civil_id {
+        // Check if there is already a visitor with this civil_id
+        let check_civil_id_query = format!("SELECT * FROM visitor WHERE civil_id = {}", civil_id);
+        let mut check_civil_id_res: Response = db.query(check_civil_id_query).await?;
+        let existing_visitors: Vec<Visitor> = check_civil_id_res.take(0)?;
+
+        if !existing_visitors.is_empty() {
+            return Err(anyhow!("visitor with the civil_id already exists"));
+        }
+    }
 
     // CHECK IF THERE IS A FILE NUMBER TABLE AND CREATE ONE IF THERE IS NOT TABLE
     let mut file_res: Response = db
@@ -37,12 +48,6 @@ pub async fn create_visitor_query(visitor: VisitorData) -> Result<Vec<Visitor>> 
 
     let mut response: Response = db.query(sql).await?;
 
-    if civil_id != "NULL" {
-        let _index_response: Response = db
-            .query("DEFINE INDEX visitorCivilIdIndex ON TABLE visitor COLUMNS civil_id UNIQUE;")
-            .await?;
-    }
-
     let visitor: Vec<Visitor> = response.take(0)?;
 
     let id = &visitor[0].id.id;
@@ -55,6 +60,6 @@ pub async fn create_visitor_query(visitor: VisitorData) -> Result<Vec<Visitor>> 
 pub fn create_visitor(data: VisitorData) -> Result<Vec<Visitor>, String> {
     match create_visitor_query(data) {
         Ok(visitor) => Ok(visitor),
-        Err(err) => Err(err.to_string()), // Convert Error to String
+        Err(err) => Err(err.to_string()),
     }
 }
