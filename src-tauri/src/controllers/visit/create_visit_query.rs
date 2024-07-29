@@ -38,6 +38,7 @@ pub async fn create_visit_query(visitor_id: String) -> Result<()> {
         name: "زيارة".to_string(),
         category: "visits".to_string(),
         amount: 2.0,
+        payment_method: "فيزا".to_string(),
         pending: true,
         visit_id,
     };

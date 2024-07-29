@@ -10,6 +10,7 @@ pub struct UpdatePaymentData {
     pub name: String,
     pub category: String,
     pub amount: f64,
+    pub payment_method: String,
     pub visit_id: String,
 }
 
@@ -29,10 +30,16 @@ pub async fn update_payment_query(data: UpdatePaymentData) -> Result<()> {
             name = '{}', 
             category = '{}', 
             amount = {}, 
+            payment_method = '{}', 
             visit = '{}', 
             pending = false, 
             created_at = time::now();",
-        &data.payment_type, &data.name, &data.category, &data.amount, &data.visit_id,
+        &data.payment_type,
+        &data.name,
+        &data.category,
+        &data.amount,
+        &data.payment_method,
+        &data.visit_id,
     );
     let _response: Response = db.query(sql).await?;
 

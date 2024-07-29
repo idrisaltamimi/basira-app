@@ -13,6 +13,7 @@ pub async fn create_payment_query(data: CreatePaymentData) -> Result<()> {
             name = $name, 
             category = $category, 
             amount = $amount, 
+            payment_method = $payment_method, 
             pending = $pending, 
             created_at = time::now(),
             visit = {};",
@@ -24,6 +25,7 @@ pub async fn create_payment_query(data: CreatePaymentData) -> Result<()> {
         .bind(("name", data.name))
         .bind(("category", data.category))
         .bind(("amount", data.amount))
+        .bind(("payment_method", data.payment_method))
         .bind(("pending", data.pending))
         .await?;
 

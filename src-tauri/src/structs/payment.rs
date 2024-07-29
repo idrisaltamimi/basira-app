@@ -8,6 +8,7 @@ pub struct Payment {
     name: String,
     category: String,
     amount: f64,
+    pub payment_method: String,
     visit_id: Thing,
     visitor_name: String,
     visitor_phone: String,
@@ -20,6 +21,7 @@ pub struct CreatePaymentData {
     pub name: String,
     pub category: String,
     pub amount: f64,
+    pub payment_method: String,
     pub pending: bool,
     pub visit_id: String,
 }

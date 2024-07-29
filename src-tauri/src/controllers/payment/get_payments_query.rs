@@ -27,6 +27,7 @@ pub async fn get_payments_query(
             name,
             category,
             amount,
+            payment_method,
             created_at,
             IF visit IS NONE THEN 'visit:buyer' ELSE visit END AS visit_id,
             IF visit.visitor.name IS NOT NONE THEN visit.visitor.name
