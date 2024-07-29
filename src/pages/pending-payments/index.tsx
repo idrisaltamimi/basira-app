@@ -100,15 +100,17 @@ export default function PendingPayments() {
 const groupPaymentsByVisit = (payments: Payment[]): Record<string, GroupedPayments> => {
   return payments.reduce((acc, payment) => {
     const { visit_id, visitor_phone, visitor_name } = payment
-    if (!acc[surrealDbId(visit_id)]) {
-      acc[surrealDbId(visit_id)] = {
-        visit_id,
+    const visitId = visit_id as SurrealDbId
+
+    if (!acc[surrealDbId(visitId)]) {
+      acc[surrealDbId(visitId)] = {
+        visit_id: visitId,
         visitor_phone,
         visitor_name,
         payments: []
       }
     }
-    acc[surrealDbId(visit_id)].payments.push(payment)
+    acc[surrealDbId(visitId)].payments.push(payment)
     return acc
   }, {} as Record<string, GroupedPayments>)
 }
