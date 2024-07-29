@@ -168,10 +168,6 @@ export function NewVisitorForm() {
           "افتح زيارة"
         )}
       </Button>
-      {/* {createVisitor.isError && (
-        <Notification error message="!حدث خطأ ما! حاول مرة أخرى" />
-      )}
-      {createVisitor.isSuccess && <Notification message="تم إضافة الزائر بنجاح" />} */}
     </form>
   )
 }
