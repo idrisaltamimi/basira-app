@@ -3,7 +3,6 @@ use surrealdb::Response;
 
 use crate::{
     connect::database,
-    controllers::statics::create_or_update_sales_query::create_or_update_sales_query,
     structs::payment::CreatePaymentData,
 };
 
