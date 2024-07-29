@@ -36,6 +36,11 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div>{formatDate(row.getValue("created_at"), "full")}</div>
   },
   {
+    accessorKey: "payment_method",
+    header: "طريقة الدفع",
+    cell: ({ row }) => <div>{row.getValue("payment_method")}</div>
+  },
+  {
     accessorKey: "amount",
     header: "المبلغ",
     cell: ({ row }) => {
@@ -57,6 +62,7 @@ export const columns: ColumnDef<Payment>[] = [
       )
     }
   },
+
   {
     id: "actions",
     enableHiding: false,
