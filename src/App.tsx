@@ -2,6 +2,7 @@ import { ComponentType, Suspense, lazy } from "react"
 import { Link, Routes, Route } from "react-router-dom"
 import ErrorBoundary from "./ErrorBoundary"
 import { ProtectedRoute } from "./components"
+import { Toaster } from "./components/ui/shadcn/toaster"
 
 const BackButton = lazy(() => import("./components/ui/BackButton"))
 const NewVisitor = lazy(() => import("./pages/new-visitor"))
@@ -94,6 +95,7 @@ export default function App() {
           <Route path="auth" element={<Load Component={Auth} />} />
           <Route path="*" element={<Link to="/" />} />
         </Routes>
+        <Toaster />
       </Suspense>
     </ErrorBoundary>
   )
