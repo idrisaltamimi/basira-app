@@ -10,7 +10,7 @@ import { FaPlus } from "react-icons/fa6"
 import { Modal } from "@/components"
 import { Checkbox } from "@/components/ui/shadcn/checkbox"
 import { Input } from "@/components/ui/shadcn/input"
-import { ChangeEvent, FormEvent, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { CheckedState } from "@radix-ui/react-checkbox"
 import { FaEdit } from "react-icons/fa"
 
@@ -35,6 +35,7 @@ export default function VisitorFile() {
     enabled: false // Disable automatic refetching since this data is set elsewhere
   })
 
+  const [visit, setVisit] = useState<Visit>()
   const [formData, setFormData] = useState(newRecordData)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -53,17 +54,17 @@ export default function VisitorFile() {
     enabled: !!visitorId
   })
 
-  const { data: visit } = useQuery({
-    queryKey: ["get_visit"],
-    queryFn: async () => {
+  useEffect(() => {
+    const getVisit = async () => {
       try {
         const res: Visit = await invoke("get_visit", { visitorId })
-        return res
+        setVisit(res)
       } catch (error) {
         console.log(error)
       }
     }
-  })
+    getVisit()
+  }, [visitorId])
 
   const handleChange = (e: ChangeEvent) => {
     const { value, name } = e.target as HTMLInputElement
