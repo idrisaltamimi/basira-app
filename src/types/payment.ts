@@ -1,31 +1,28 @@
 import { SurrealDbId } from "../lib/types"
 
-export type NewPayment = {
+type PaymentType = {
   payment_type: "spending" | "payment"
+  payment_method: "كاش" | "فيزا"
   name: string
   category: "products" | "salaries" | "visits" | "expenses"
-  amount: string
-  pending: boolean
-  visit_id: string
+  amount: number
+  visit_id: string | SurrealDbId
 }
 
-export type Payment = {
-  amount: number
+export type UpdatePaymentData = PaymentType
+
+export type NewPayment = PaymentType & {
+  amount: string
+  pending: boolean
+}
+
+export type Payment = PaymentType & {
   created_at: string
   id: SurrealDbId
-  visit_id: SurrealDbId
-  payment_type: "spending" | "payment"
-  name: string
-  category: "products" | "salaries" | "visits" | "expenses"
   visitor_name: string
   visitor_phone: string
 }
 
-export type ProductPayment = {
-  payment_type: "spending" | "payment"
-  name: string
-  category: "products" | "salaries" | "visits" | "expenses"
-  amount: number
+export type ProductPayment = PaymentType & {
   pending: boolean
-  visit_id: string
 }
