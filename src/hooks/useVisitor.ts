@@ -18,7 +18,6 @@ export default function useVisitor() {
         const res = await invoke("create_visitor", { data })
         return res
       } catch (error) {
-        console.log(error)
         throw new Error(error as string)
       }
     },
