@@ -46,7 +46,6 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
 
   useEffect(() => {
     if (!visit) return
-    console.log("visit")
     setFormData({
       treatment_img: visit.treatment_img,
       description: visit.description,
@@ -57,7 +56,7 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
       prescription_cost: visit.prescription_cost?.toString()
     })
   }, [visit])
-  console.log(formData)
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -144,36 +143,20 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
       </div>
 
       <div className="relative bg-white w-[900px] h-[377.9px] mx-auto rounded-3xl">
-        {formData.treatment_img ? (
-          <CanvasDraw
-            className="relative z-10"
-            ref={canvasRef}
-            backgroundColor="transparent"
-            hideGrid
-            brushColor={color}
-            catenaryColor={color}
-            brushRadius={2}
-            lazyRadius={0}
-            loadTimeOffset={0}
-            canvasWidth={900}
-            canvasHeight={377.9}
-            saveData={decompressFromUTF16(formData.treatment_img)}
-          />
-        ) : (
-          <CanvasDraw
-            className="relative z-10"
-            ref={canvasRef}
-            backgroundColor="transparent"
-            hideGrid
-            brushColor={color}
-            catenaryColor={color}
-            brushRadius={2}
-            lazyRadius={0}
-            loadTimeOffset={0}
-            canvasWidth={900}
-            canvasHeight={377.9}
-          />
-        )}
+        <CanvasDraw
+          className="relative z-10"
+          ref={canvasRef}
+          backgroundColor="transparent"
+          hideGrid
+          brushColor={color}
+          catenaryColor={color}
+          brushRadius={2}
+          lazyRadius={0}
+          loadTimeOffset={0}
+          canvasWidth={900}
+          canvasHeight={377.9}
+          saveData={decompressFromUTF16(formData.treatment_img ?? "")}
+        />
 
         <img
           src={muscularSystem}
