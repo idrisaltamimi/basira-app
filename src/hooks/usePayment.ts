@@ -1,14 +1,6 @@
-import { NewPayment, Payment, ProductPayment } from "@/types/payment"
+import { NewPayment, Payment, ProductPayment, UpdatePaymentData } from "@/types/payment"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
-
-type UpdatePaymentData = {
-  payment_type: "spending" | "payment"
-  name: string
-  category: "products" | "salaries" | "visits" | "expenses"
-  amount: number
-  visit_id: string
-}
 
 export default function usePayment() {
   const queryClient = useQueryClient()
