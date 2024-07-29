@@ -59,7 +59,7 @@ export default function ProductsListing({
   }
 
   return (
-    <div className="basis-full">
+    <div className="basis-1/3">
       <h2>المنتجات</h2>
       <hr />
       <div className="flex items-center gap-4 mb-10">
@@ -98,7 +98,7 @@ export default function ProductsListing({
           غير المتوفر
         </Button>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex flex-col gap-4">
         {filteredProducts.map((item) => (
           <div
             key={surrealDbId(item.id)}
