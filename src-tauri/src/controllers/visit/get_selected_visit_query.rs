@@ -30,7 +30,6 @@ pub async fn get_selected_visit_query(visit_id: String) -> Result<Option<Selecte
 
     let mut response: Response = db.query(sql).await?;
     let visit: Option<SelectedVisit> = response.take(0)?;
-    println!("response: {:#?}", visit);
 
     Ok(visit)
 }

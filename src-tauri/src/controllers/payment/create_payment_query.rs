@@ -13,9 +13,9 @@ pub async fn create_payment_query(data: CreatePaymentData) -> Result<()> {
     );
 
     let mut response: Response = db.query(check_sql).await?;
-    println!("response: {:#?}", response);
+
     let existing_payment: Vec<NewPaymentData> = response.take(0)?;
-    println!("existing_payment: {:#?}", existing_payment);
+
     // Construct the SQL string conditionally
     let sql = if existing_payment.len() > 0 {
         let payment_id = &existing_payment[0].id.id;
@@ -45,7 +45,7 @@ pub async fn create_payment_query(data: CreatePaymentData) -> Result<()> {
             data.visit_id
         )
     };
-    println!("sql: {:#?}", sql);
+
     // Execute the SQL query
     let _response: Response = db
         .query(sql)
