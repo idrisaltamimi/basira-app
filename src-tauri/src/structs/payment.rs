@@ -25,3 +25,16 @@ pub struct CreatePaymentData {
     pub pending: bool,
     pub visit_id: String,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct NewPaymentData {
+    pub amount: f64,
+    pub category: String,
+    pub created_at: Datetime,
+    pub id: Thing,
+    pub name: String,
+    pub payment_method: String,
+    pub payment_type: String,
+    pub pending: bool,
+    pub visit: Thing,
+}
