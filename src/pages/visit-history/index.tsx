@@ -17,6 +17,7 @@ import {
 import { TextField } from "@/components"
 import { Label } from "@/components/ui/shadcn/label"
 import VisitFile from "./VisitFile"
+import UpdateVisitor from "./UpdateVisitor"
 
 type LastVisitsHistory = {
   id: SurrealDbId
@@ -37,13 +38,13 @@ export default function VisitHistory() {
   const [visitors, setVisitors] = useState<Visitor[] | null>(null)
   const [selectedVisitorId, setSelectedVisitorId] = useState<string | null>(null)
   const [selectedVisitId, setSelectedVisitId] = useState<string | null>(null)
+  const [visitor, setVisitor] = useState<Visitor>()
 
   const handleSearch = async (phone: string) => {
     try {
       const data: Visitor[] = await invoke("get_visitors", {
         number: parseInt(phone)
       })
-      console.log(data)
       setVisitors(data)
     } catch (error) {
       console.error(error)
@@ -54,6 +55,9 @@ export default function VisitHistory() {
     if (searchPhone.length < 7) return setVisitors(null)
 
     const timer = setTimeout(() => {
+      setSelectedVisitorId(null)
+      setSelectedVisitId(null)
+      setVisitor(undefined)
       handleSearch(searchPhone)
     }, 1500)
 
@@ -90,19 +94,35 @@ export default function VisitHistory() {
     enabled: !!selectedVisitId // Only run query if a visitorId is selected
   })
 
+  useEffect(() => {
+    if (!selectedVisitorId) return
+    const getVisitor = async () => {
+      try {
+        const res: Visitor = await invoke("get_visitor", {
+          id: selectedVisitorId
+        })
+        setVisitor(res)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    getVisitor()
+  }, [selectedVisitorId])
+
   return (
     <div>
       <h1>تاريخ الزيارات</h1>
       <hr />
       <div className="flex items-start h-full gap-4">
-        <div className="basis-1/3">
+        <div className="flex flex-col h-full gap-4 basis-1/3">
           <TextField
             label="أدخل رقم هاتف الزائر"
             type="text"
             value={searchPhone}
             onChange={(e) => setSearchPhone(e.target.value)}
           />
-          <div className="mt-4">
+          <div>
             {visitors && visitors.length > 0 ? (
               <div>
                 <Label>اختر الزائر</Label>
@@ -129,8 +149,9 @@ export default function VisitHistory() {
               visitors != null && <div>لا يوجد زائر بهذا الرقم</div>
             )}
           </div>
+
           {visitsHistory && visitsHistory.length > 0 ? (
-            <div className="mt-4">
+            <div>
               <Label>حدد الزيارة</Label>
               <Select onValueChange={(value) => setSelectedVisitId(value)}>
                 <SelectTrigger className="h-11">
@@ -154,6 +175,9 @@ export default function VisitHistory() {
           ) : (
             visitsHistory && <div>لا توجد زيارات مسجلة لهذا الزائر</div>
           )}
+
+          <hr />
+          {visitor && <UpdateVisitor visitor={visitor} />}
         </div>
         <div className="border-r" />
         <div className="basis-2/3">
