@@ -44,7 +44,10 @@ export default function PaymentsActions({
     updatePayment.mutate(
       {
         visit_id: visitId,
-        amount: totalAmount,
+        amount:
+          formData.discount === ""
+            ? totalAmount
+            : calculateNewTotal(totalAmount, parseInt(formData.discount)).newTotalValue,
         payment_type: "payment",
         category: "visits",
         name: name,

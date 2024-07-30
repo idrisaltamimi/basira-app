@@ -75,7 +75,15 @@ export default function ProductsSummary({
       category: "products",
       pending: formData.name === "buyer" ? false : true,
       visit_id: formData.name === "buyer" ? "visit:buyer" : formData.name,
-      amount: parseFloat(paymentSum(addedProducts).toFixed(3)),
+      amount:
+        formData.discount === ""
+          ? parseFloat(paymentSum(addedProducts).toFixed(3))
+          : parseFloat(
+              calculateNewTotal(
+                paymentSum(addedProducts),
+                parseInt(formData.discount)
+              ).newTotalValue.toFixed(3)
+            ),
       payment_method: formData.payment_method
     }
 
