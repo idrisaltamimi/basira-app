@@ -7,7 +7,7 @@ use crate::structs::visit::UpdateVisitData;
 #[tokio::main]
 pub async fn update_visit_query(data: UpdateVisitData) -> Result<()> {
     let db = database().await?;
-    println!("{:#?}", data);
+
     let sql = format!(
         "UPDATE visit SET 
             treatment_img = '{}', 
@@ -30,7 +30,6 @@ pub async fn update_visit_query(data: UpdateVisitData) -> Result<()> {
         data.visit_id
     );
     let _response: Response = db.query(sql).await?;
-    println!("{:#?}", _response);
 
     Ok(())
 }
