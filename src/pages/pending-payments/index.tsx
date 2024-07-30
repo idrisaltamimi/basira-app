@@ -28,7 +28,7 @@ export default function PendingPayments() {
 
   const paymentSum = (values: Payment[]) =>
     values.reduce((acc, cur) => acc + cur.amount, 0)
-  console.log(groupedPayments)
+
   return (
     <div>
       <h1>الحسابات</h1>
@@ -58,7 +58,11 @@ export default function PendingPayments() {
                   <tbody>
                     {group.payments.map((payment) => (
                       <tr key={payment.id.id.String} className="w-full">
-                        <td className="py-2">{payment.name}</td>
+                        <td className="py-2">
+                          {payment.name === "treatment_cost"
+                            ? "حساب الجلسة"
+                            : payment.name}
+                        </td>
                         <td className="py-2">{formatCurrency(payment.amount)}</td>
                         <td className="py-2">
                           <DeletePayment paymentId={payment.id}>
