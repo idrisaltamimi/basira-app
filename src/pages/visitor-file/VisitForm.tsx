@@ -8,7 +8,7 @@ import { compressToUTF16, decompressFromUTF16 } from "lz-string"
 import { TextField } from "@/components/form/Textfield"
 import { Textarea } from "@/components/ui/shadcn/textarea"
 import { Button } from "@/components/ui/shadcn/button"
-import { useUser, useVisit } from "@/hooks"
+import { usePayment, useUser, useVisit } from "@/hooks"
 import { surrealDbId } from "@/lib/utils"
 import { Visit } from "@/types/visit"
 import { toast } from "@/components/ui/use-toast"
@@ -35,6 +35,7 @@ const INITIAL_FORM_DATA: {
 export default function VisitForm({ visit }: { visit: Visit | undefined }) {
   const { userData } = useUser()
   const { updateVisit } = useVisit()
+  const { createNewPayment } = usePayment()
 
   const { undo, clear, image, selectColor, color, canvasRef } = useCanvas()
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
@@ -67,13 +68,22 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
       prescription: formData.prescription ?? "",
       symptoms: formData.symptoms ?? "",
       treatment_cost: parseFloat(formData?.treatment_cost ?? ""),
-      prescription_cost: parseFloat(formData?.prescription_cost ?? ""),
+      prescription_cost: parseFloat("0"),
       doctor: surrealDbId(userData?.id),
       visit_id: surrealDbId(visit?.id)
     }
 
     updateVisit.mutate(visitData, {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await createNewPayment.mutate({
+          payment_type: "payment",
+          payment_method: "فيزا",
+          name: "treatment_cost",
+          category: "visits",
+          amount: parseFloat(formData?.treatment_cost ?? ""),
+          visit_id: surrealDbId(visit?.id),
+          pending: true
+        })
         toast({
           title: "تم حفظ الزيارة بنجاح"
         })
@@ -204,7 +214,7 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="w-1/2 pl-2">
           <TextField
             label="حساب الجلسة"
             name="treatment_cost"
@@ -213,14 +223,14 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
             onChange={handleChange}
             required
           />
-          <TextField
+          {/* <TextField
             label="حساب الأدوية"
             name="prescription_cost"
             type="number"
             value={formData.prescription_cost}
             onChange={handleChange}
             required
-          />
+          /> */}
         </div>
 
         <Button className="self-start mt-4 px-14">حفظ</Button>
