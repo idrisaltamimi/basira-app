@@ -25,3 +25,14 @@ pub struct VisitorData {
     pub gender: String,
     pub birthdate: Datetime,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UpdateVisitorData {
+    pub id: String,
+    pub name: String,
+    pub phone: u32,
+    pub civil_id: Option<u32>,
+    pub gender: String,
+    pub birthdate: Datetime,
+    pub file_number: u32,
+}

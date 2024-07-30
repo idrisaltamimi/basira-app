@@ -14,6 +14,8 @@ fn main() {
             // Visitor Queries
             visitor::create_visitor_query::create_visitor,
             visitor::get_visitors_query::get_visitors,
+            visitor::get_visitor_query::get_visitor,
+            visitor::update_visitor_query::update_visitor,
             // Visit Queries
             visit::create_visit_query::create_visit,
             visit::get_visits_query::get_visits,
