@@ -1,66 +1,160 @@
-import { ChangeEvent, FormEvent, useState } from "react"
-import { TextField, TextFieldProps } from "@/components/form/Textfield"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import { TextField } from "@/components/form/Textfield"
 import { useUser } from "@/hooks"
 import { Button } from "@/components/ui/shadcn/button"
-import { User } from "@/types/user"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import { DatePickerWrapper } from "@/components"
+import ReactDatePicker from "react-datepicker"
+import { surrealDbId } from "@/lib/utils"
+
+import "react-datepicker/dist/react-datepicker.css"
+import { toast } from "@/components/ui/use-toast"
+import { ImSpinner2 } from "react-icons/im"
+
+const initialNewPassword = {
+  password: "",
+  confirmPassword: "",
+  newPasswordError: ""
+}
+
+const INITIAL_FORM_DATA: {
+  name: string
+  password: string
+  email: string
+  phone: string
+  birthdate: Date | null
+} = {
+  name: "",
+  password: "",
+  email: "",
+  phone: "",
+  birthdate: new Date()
+}
 
 export default function Settings() {
-  const {
-    userData,
-    userForm,
-    saveNewPassword,
-    disablePassword,
-    setDisablePassword,
-    setNewPassword,
-    newPassword,
-    handleChange,
-    handlePasswordChange,
-    updateUser
-  } = useSettings()
+  const { userData, updateUser } = useUser()
+
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA)
+
   const [showPassword, setShowPassword] = useState(false)
+  const [disablePassword, setDisablePassword] = useState(true)
+  const [newPassword, setNewPassword] = useState(initialNewPassword)
+
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        name: userData?.name,
+        password: "",
+        email: userData?.email,
+        phone: userData?.phone.toString(),
+        birthdate: userData.birthdate ? new Date(userData.birthdate) : null
+      })
+    }
+  }, [userData?.id])
+
+  const handleChange = (e: ChangeEvent) => {
+    const { value, name } = e.target as HTMLInputElement
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handlePasswordChange = (e: ChangeEvent) => {
+    const { value, name } = e.target as HTMLInputElement
+    setNewPassword((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const saveNewPassword = () => {
+    if (newPassword.password !== newPassword.confirmPassword) {
+      return setNewPassword((prev) => ({
+        ...prev,
+        newPasswordError: "كلمات المرور غير متطابقة"
+      }))
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      password: newPassword.password
+    }))
+    setNewPassword(initialNewPassword)
+    setDisablePassword(true)
+  }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    updateUser.mutate(userForm)
+    if (!userData?.id) return
+
+    updateUser.mutate(
+      {
+        ...formData,
+        birthdate: formData.birthdate as Date,
+        id: surrealDbId(userData?.id),
+        password: formData.password === "" ? undefined : formData.password
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: "تم تحديث البيانات بنجاح",
+            duration: 3000
+          })
+        },
+        onError: () => {
+          toast({
+            variant: "destructive",
+            title: "!حدث خطأ ما! حاول مرة أخرى",
+            duration: 3000
+          })
+        }
+      }
+    )
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold">الحساب الشخصي</h2>
+      <h1>الحساب الشخصي</h1>
 
       <hr className="mt-4 mb-8" />
 
-      <form onSubmit={handleSubmit} className="flex flex-col items-start gap-6">
-        <TextFieldWrapper
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-8 p-6 border border-input shadow-sm max-w-[800px] rounded-3xl mx-auto"
+      >
+        <TextField
           label="الاسم"
           name="name"
-          value={userForm?.name}
+          value={formData?.name}
           onChange={handleChange}
         />
 
-        <TextFieldWrapper
+        <TextField
           label="البريد الالكتروني"
           type="email"
           name="email"
-          value={userForm?.email}
+          value={formData?.email}
           onChange={handleChange}
         />
 
-        <TextFieldWrapper
+        <TextField
           label="رقم الهاتف"
           name="phone"
-          value={userForm?.phone}
+          value={formData?.phone}
           onChange={handleChange}
         />
 
+        <DatePickerWrapper label="تاريخ الميلاد*" className="bg-background">
+          <ReactDatePicker
+            className="datepicker"
+            selected={formData.birthdate}
+            onChange={(date) => setFormData((prev) => ({ ...prev, birthdate: date }))}
+          />
+        </DatePickerWrapper>
+
         {disablePassword && (
-          <div className="flex items-end max-w-[600px] gap-2 w-full">
+          <div className="flex items-end max-w-[600px] gap-2 w-1/2">
             <TextField
               label="كلمة المرور"
               type="password"
               name="password"
-              value={userForm?.password}
+              value={formData?.password}
+              className="text-transparent"
               disabled
               onChange={handleChange}
             />
@@ -79,8 +173,8 @@ export default function Settings() {
         )}
 
         {!disablePassword && (
-          <div className="max-w-[600px] w-full">
-            <div className="max-w-[600px] w-full flex items-center gap-4">
+          <div className="w-full">
+            <div className="flex items-center w-full gap-4">
               <TextField
                 label="كلمة المرور الجديدة"
                 name="password"
@@ -90,6 +184,7 @@ export default function Settings() {
                   <Button
                     size={"icon"}
                     variant={"ghost"}
+                    type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -108,6 +203,7 @@ export default function Settings() {
                   <Button
                     size={"icon"}
                     variant={"ghost"}
+                    type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -140,88 +236,14 @@ export default function Settings() {
           </div>
         )}
 
-        <Button
-          disabled={JSON.stringify(userForm) === JSON.stringify(userData)}
-          className="mt-4"
-        >
-          حفظ التغييرات
+        <Button disabled={updateUser.isPending} className="mt-4">
+          {updateUser.isPending ? (
+            <ImSpinner2 className="text-xl animate-spin" />
+          ) : (
+            "حفظ التغييرات"
+          )}
         </Button>
       </form>
     </div>
   )
-}
-
-interface TextFieldWrapperProps extends TextFieldProps {}
-
-function TextFieldWrapper({ ...props }: TextFieldWrapperProps) {
-  const [disableInput, setDisableInput] = useState(true)
-
-  return (
-    <div className="flex items-end max-w-[600px] gap-2 w-full">
-      <TextField {...props} disabled={disableInput} />
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        className="mb-[3px]"
-        onClick={() => setDisableInput((prev) => !prev)}
-      >
-        {disableInput ? "تعديل" : "حفظ"}
-      </Button>
-    </div>
-  )
-}
-
-const initialNewPassword = {
-  password: "",
-  confirmPassword: "",
-  newPasswordError: ""
-}
-
-function useSettings() {
-  const { userData, updateUser } = useUser()
-
-  const [userForm, setUserForm] = useState(userData as User)
-  const [disablePassword, setDisablePassword] = useState(true)
-  const [newPassword, setNewPassword] = useState(initialNewPassword)
-
-  const handleChange = (e: ChangeEvent) => {
-    const { value, name } = e.target as HTMLInputElement
-    setUserForm((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handlePasswordChange = (e: ChangeEvent) => {
-    const { value, name } = e.target as HTMLInputElement
-    setNewPassword((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const saveNewPassword = () => {
-    if (newPassword.password !== newPassword.confirmPassword) {
-      return setNewPassword((prev) => ({
-        ...prev,
-        newPasswordError: "كلمات المرور غير متطابقة"
-      }))
-    }
-
-    setUserForm((prev) => ({
-      ...prev,
-      password: newPassword.password
-    }))
-    setNewPassword(initialNewPassword)
-    setDisablePassword(true)
-  }
-
-  return {
-    saveNewPassword,
-    userForm,
-    disablePassword,
-    setDisablePassword,
-    newPassword,
-    handleChange,
-    handlePasswordChange,
-    updateUser,
-    userData,
-    setUserForm,
-    setNewPassword
-  }
 }

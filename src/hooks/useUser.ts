@@ -1,4 +1,4 @@
-import { User } from "@/types/user"
+import { UpdateUserData, User } from "@/types/user"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 
@@ -47,12 +47,13 @@ export default function useUser() {
   })
 
   const updateUser = useMutation({
-    mutationFn: async (data: User) => {
+    mutationFn: async (data: UpdateUserData) => {
       try {
         const res = await invoke("update_user", { data })
         return res
       } catch (error) {
-        console.error(error)
+        console.log(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: async (data) => {

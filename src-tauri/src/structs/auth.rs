@@ -28,3 +28,13 @@ pub struct UserData {
     pub gender: String,
     pub birthdate: Datetime,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UpdateUserData {
+    pub name: String,
+    pub password: Option<String>,
+    pub email: String,
+    pub phone: String,
+    pub birthdate: Datetime,
+    pub id: String,
+}

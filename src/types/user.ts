@@ -14,3 +14,12 @@ export type User = {
   logout_at?: String
   birthdate: string
 }
+
+export type UpdateUserData = {
+  name: string
+  password?: string
+  email: string
+  phone: string
+  birthdate: Date
+  id: string
+}
