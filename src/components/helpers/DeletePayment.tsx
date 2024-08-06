@@ -39,10 +39,15 @@ export default function DeletePayment({
       }
     >
       <form onSubmit={handleSubmit} className="flex gap-4">
-        <Button className="basis-full" variant={"destructive"}>
+        <Button fullWidth variant={"destructive"}>
           نعم
         </Button>
-        <Button variant="secondary" className="basis-full" onClick={() => setOpen(false)}>
+        <Button
+          type="button"
+          variant="secondary"
+          fullWidth
+          onClick={() => setOpen(false)}
+        >
           لا
         </Button>
       </form>
