@@ -142,6 +142,7 @@ export default function Settings() {
         <DatePickerWrapper label="تاريخ الميلاد*" className="bg-background">
           <ReactDatePicker
             className="datepicker"
+            dateFormat="dd/MM/yy"
             selected={formData.birthdate}
             onChange={(date) => setFormData((prev) => ({ ...prev, birthdate: date }))}
           />

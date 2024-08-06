@@ -147,6 +147,7 @@ export default function UpdateVisitor({ visitor }: { visitor: Visitor }) {
       <DatePickerWrapper label="تاريخ الميلاد*" className="bg-background">
         <ReactDatePicker
           className="datepicker"
+          dateFormat="dd/MM/yy"
           selected={formData.birthdate}
           onChange={(date) => setFormData((prev) => ({ ...prev, birthdate: date }))}
         />

@@ -139,12 +139,12 @@ export default function PaymentsActions({
             </div>
           </div>
           <div className="flex gap-4 mt-6">
-            <Button className="basis-full">نعم</Button>
+            <Button fullWidth>نعم</Button>
             <Button
               variant="secondary"
-              className="basis-full"
-              type="button"
+              fullWidth
               onClick={() => setOpen(false)}
+              type="button"
             >
               لا
             </Button>

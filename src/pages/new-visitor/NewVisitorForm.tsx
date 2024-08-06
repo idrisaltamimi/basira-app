@@ -84,6 +84,7 @@ export function NewVisitorForm() {
     <form
       onSubmit={handleSubmit}
       className="flex flex-col gap-8 p-6 border border-input shadow-sm max-w-[800px] rounded-3xl mx-auto"
+      autoComplete="off"
     >
       <div className="flex items-center gap-4 mt-2">
         <Label>الجنس:</Label>
@@ -136,6 +137,7 @@ export function NewVisitorForm() {
 
       <TextField
         required
+        autoComplete="off"
         label="رقم الهاتف"
         name="phone"
         type="number"
@@ -147,6 +149,7 @@ export function NewVisitorForm() {
         <ReactDatePicker
           className="datepicker"
           selected={newVisitor.birthdate}
+          dateFormat="dd/MM/yy"
           onChange={(date) => setNewVisitor((prev) => ({ ...prev, birthdate: date }))}
         />
       </DatePickerWrapper>
