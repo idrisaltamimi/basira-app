@@ -8,7 +8,6 @@ import { DatePickerWrapper } from "@/components"
 import ReactDatePicker from "react-datepicker"
 import { Label } from "@/components/ui/shadcn/label"
 import { ImSpinner2 } from "react-icons/im"
-import { toast } from "@/components/ui/use-toast"
 
 import "react-datepicker/dist/react-datepicker.css"
 import { Visitor } from "@/lib/types"
@@ -56,40 +55,14 @@ export default function UpdateVisitor({ visitor }: { visitor: Visitor }) {
 
     if (formData.birthdate == null) return
 
-    updateVisitor.mutate(
-      {
-        ...formData,
-        birthdate: formData.birthdate as Date,
-        file_number: parseInt(formData.file_number),
-        phone: parseInt(formData.phone),
-        civil_id: formData.civil_id ? parseInt(formData.civil_id) : undefined,
-        id: surrealDbId(visitor.id)
-      },
-      {
-        onSuccess: () => {
-          toast({
-            title: "تم التعديل بنجاح",
-            duration: 3000
-          })
-        },
-        onError: (error) => {
-          const civilIdErr = "visitor with the civil_id already exists"
-          if (error.message === civilIdErr) {
-            toast({
-              variant: "destructive",
-              title: "خطأ في الرقم المدني",
-              description: "يوجد زائر مسجل بهذا الرقم المدني"
-            })
-          } else {
-            toast({
-              variant: "destructive",
-              title: "!حدث خطأ ما! حاول مرة أخرى",
-              duration: 3000
-            })
-          }
-        }
-      }
-    )
+    updateVisitor.mutate({
+      ...formData,
+      birthdate: formData.birthdate as Date,
+      file_number: parseInt(formData.file_number),
+      phone: parseInt(formData.phone),
+      civil_id: formData.civil_id ? parseInt(formData.civil_id) : undefined,
+      id: surrealDbId(visitor.id)
+    })
   }
 
   return (
@@ -147,7 +120,7 @@ export default function UpdateVisitor({ visitor }: { visitor: Visitor }) {
       <DatePickerWrapper label="تاريخ الميلاد*" className="bg-background">
         <ReactDatePicker
           className="datepicker"
-          dateFormat="dd/MM/yy"
+          dateFormat="dd/MM/yyyy"
           selected={formData.birthdate}
           onChange={(date) => setFormData((prev) => ({ ...prev, birthdate: date }))}
         />

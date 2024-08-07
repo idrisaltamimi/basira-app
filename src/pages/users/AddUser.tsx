@@ -124,7 +124,7 @@ export function AddUser() {
             <DatePickerWrapper label="تاريخ الميلاد*">
               <ReactDatePicker
                 className="datepicker"
-                dateFormat="dd/MM/yy"
+                dateFormat="dd/MM/yyyy"
                 selected={formData.birthdate}
                 onChange={(date) => setFormData((prev) => ({ ...prev, birthdate: date }))}
               />

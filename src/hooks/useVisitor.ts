@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 
@@ -33,6 +34,26 @@ export default function useVisitor() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_visits", "get_unpaid_payments"] })
+      toast({
+        title: "تم إضافة الزائر بنجاح",
+        duration: 3000
+      })
+    },
+    onError: (error) => {
+      const civilIdErr = "visitor with the civil_id already exists"
+      if (error.message === civilIdErr) {
+        toast({
+          variant: "destructive",
+          title: "خطأ في الرقم المدني",
+          description: "يوجد زائر مسجل بهذا الرقم المدني"
+        })
+      } else {
+        toast({
+          variant: "destructive",
+          title: "!حدث خطأ ما! حاول مرة أخرى",
+          duration: 3000
+        })
+      }
     }
   })
 
@@ -54,6 +75,26 @@ export default function useVisitor() {
           "get_selected_visit"
         ]
       })
+      toast({
+        title: "تم التعديل بنجاح",
+        duration: 3000
+      })
+    },
+    onError: (error) => {
+      const civilIdErr = "visitor with the civil_id already exists"
+      if (error.message === civilIdErr) {
+        toast({
+          variant: "destructive",
+          title: "خطأ في الرقم المدني",
+          description: "يوجد زائر مسجل بهذا الرقم المدني"
+        })
+      } else {
+        toast({
+          variant: "destructive",
+          title: "!حدث خطأ ما! حاول مرة أخرى",
+          duration: 3000
+        })
+      }
     }
   })
 
@@ -64,11 +105,19 @@ export default function useVisitor() {
           visitorId
         })
       } catch (error) {
-        console.error(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_visits"] })
+      toast({
+        title: "تم إضافة الزائر بنجاح"
+      })
+    },
+    onError: () => {
+      toast({
+        title: "!حدث خطأ ما! حاول مرة أخرى"
+      })
     }
   })
 

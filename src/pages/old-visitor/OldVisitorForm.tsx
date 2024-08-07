@@ -6,7 +6,6 @@ import { TextField } from "@/components/form/Textfield"
 import { Visitor } from "@/lib/types"
 import { useVisitor } from "@/hooks"
 import { surrealDbId } from "@/lib/utils"
-import { Notification } from "@/components"
 
 export function OldVisitorForm() {
   const { createNewVisit } = useVisitor()
@@ -95,11 +94,6 @@ export function OldVisitorForm() {
           لا يوجد زائر مسجل بهذا الرقم
         </div>
       )}
-
-      {createNewVisit.isError && (
-        <Notification error message="!حدث خطأ ما! حاول مرة أخرى" />
-      )}
-      {createNewVisit.isSuccess && <Notification message="تم إضافة الزائر بنجاح" />}
     </form>
   )
 }
