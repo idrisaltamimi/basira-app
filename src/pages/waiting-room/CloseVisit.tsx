@@ -8,13 +8,17 @@ import { Button } from "@/components/ui/shadcn/button"
 import type { OpenVisits } from "@/lib/types"
 
 export default function CloseVisit({ visit }: { visit: OpenVisits }) {
-  const { closeOpenVisit } = useVisit()
+  const { deleteVisit } = useVisit()
 
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
-    closeOpenVisit.mutate(surrealDbId(visit.id))
+    deleteVisit.mutate(surrealDbId(visit.id), {
+      onSuccess: () => {
+        setDialogOpen(false)
+      }
+    })
   }
 
   return (
@@ -32,7 +36,12 @@ export default function CloseVisit({ visit }: { visit: OpenVisits }) {
       }
     >
       <form onSubmit={onSubmit} className="flex items-stretch gap-2">
-        <Button fullWidth variant={"destructive"} type="submit">
+        <Button
+          fullWidth
+          variant={"destructive"}
+          type="submit"
+          disabled={deleteVisit.isPending}
+        >
           إغلاق
         </Button>
         <Button
@@ -40,6 +49,7 @@ export default function CloseVisit({ visit }: { visit: OpenVisits }) {
           variant={"secondary"}
           type="button"
           onClick={() => setDialogOpen(false)}
+          disabled={deleteVisit.isPending}
         >
           إلغاء
         </Button>

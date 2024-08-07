@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast"
 import { OpenVisits, SurrealDbId } from "@/lib/types"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -57,7 +58,6 @@ export default function useVisit() {
     mutationFn: async (visitId: string) => {
       try {
         const res = await invoke("close_visit", { visitId })
-        console.log(res)
         return res
       } catch (error) {
         console.error("Error closing visit:", error)
@@ -66,6 +66,30 @@ export default function useVisit() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_visits"] })
+    }
+  })
+
+  const deleteVisit = useMutation({
+    mutationFn: async (visitId: string) => {
+      try {
+        const res = await invoke("delete_visit", { visitId })
+        return res
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get_visits"] })
+      toast({
+        title: "تم إلغاء الزيارة بنجاح"
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: "حدث خطأ ما",
+        description: error.message,
+        variant: "destructive"
+      })
     }
   })
 
@@ -103,6 +127,7 @@ export default function useVisit() {
     getLatestVisits,
     closeOpenVisit,
     updateVisit,
-    getVisitsHistory
+    getVisitsHistory,
+    deleteVisit
   }
 }

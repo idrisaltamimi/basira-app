@@ -24,6 +24,7 @@ fn main() {
             visit::get_visits_history_query::get_visits_history,
             visit::get_selected_visit_query::get_selected_visit,
             visit::close_visit_query::close_visit,
+            visit::delete_visit_query::delete_visit,
             // Payment Queries
             payment::create_payment_query::create_payment,
             payment::create_products_payment::create_products_payments,
