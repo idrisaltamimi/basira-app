@@ -5,4 +5,5 @@ pub mod product;
 pub mod salary;
 pub mod statics;
 pub mod visit;
+pub mod visit_image;
 pub mod visitor;

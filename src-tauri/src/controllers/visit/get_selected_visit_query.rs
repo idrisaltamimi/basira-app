@@ -7,9 +7,9 @@ use crate::{connect::database, structs::visit::SelectedVisit};
 pub async fn get_selected_visit_query(visit_id: String) -> Result<Option<SelectedVisit>> {
     let db = database().await?;
 
-    let sql = format!(
+    let sql = format!( // you need to remove this condition in the future after the data are updated
         "SELECT id, 
-            treatment_img, 
+            IF treatment_img.image IS NONE THEN treatment_img ELSE treatment_img.image END AS treatment_img, 
             created_at,
             description, 
             treatment_type, 
@@ -38,6 +38,6 @@ pub async fn get_selected_visit_query(visit_id: String) -> Result<Option<Selecte
 pub fn get_selected_visit(visit_id: String) -> Result<Option<SelectedVisit>, String> {
     match get_selected_visit_query(visit_id) {
         Ok(visit) => Ok(visit),
-        Err(err) => Err(err.to_string()), // Convert Error to String
+        Err(err) => Err(err.to_string()),
     }
 }

@@ -4,7 +4,7 @@ use surrealdb::Response;
 use crate::{
     connect::database,
     controllers::payment::create_payment_query::create_payment_query,
-    structs::{payment::CreatePaymentData, visit::NewVisit},
+    structs::{payment::CreatePaymentData, visit::Visit},
 };
 
 pub async fn create_visit_query(visitor_id: String) -> Result<()> {
@@ -26,7 +26,7 @@ pub async fn create_visit_query(visitor_id: String) -> Result<()> {
         { visitor_id }
     );
     let mut response: Response = db.query(sql).await?;
-    let res: Option<NewVisit> = response.take(0)?;
+    let res: Option<Visit> = response.take(0)?;
 
     let visit_id = match res {
         Some(visit) => format!("visit:{}", visit.id.id),
@@ -56,6 +56,9 @@ async fn create_query(visitor_id: String) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn create_visit(visitor_id: String) {
-    let _res = create_query(visitor_id);
+pub fn create_visit(visitor_id: String) -> Result<(), String> {
+    match create_query(visitor_id) {
+        Ok(()) => Ok(()),
+        Err(err) => Err(err.to_string()),
+    }
 }

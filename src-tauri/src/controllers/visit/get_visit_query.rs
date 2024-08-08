@@ -10,7 +10,7 @@ pub async fn get_visit_query(visitor_id: String) -> Result<Option<SelectedVisit>
 
     let sql = format!(
         "SELECT id, 
-            treatment_img, 
+            IF treatment_img.image IS NONE THEN treatment_img ELSE treatment_img.image END AS treatment_img, 
             created_at,
             description, 
             treatment_type, 
@@ -19,6 +19,7 @@ pub async fn get_visit_query(visitor_id: String) -> Result<Option<SelectedVisit>
             prescription_cost,
             symptoms,
             doctor.name AS doctor_name,
+            doctor AS doctor_id,
             visitor.id AS visitor_id,
             visitor.name AS visitor_name,
             visitor.birthdate AS visitor_birthdate,

@@ -12,6 +12,7 @@ export type Visit = {
   description?: string
   treatment_type?: string
   doctor_name?: string
+  doctor_id?: SurrealDbId
   prescription?: string
   treatment_cost?: number
   prescription_cost?: number

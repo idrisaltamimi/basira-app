@@ -1,6 +1,13 @@
 use serde::{Deserialize, Serialize};
 use surrealdb::sql::{Datetime, Thing};
 
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(untagged)]
+pub enum TreatmentImg {
+    Thing(Thing),
+    String(String),
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Visit {
     pub id: Thing,
@@ -8,23 +15,7 @@ pub struct Visit {
     pub is_open: bool,
     pub visitor: Thing,
     pub doctor: Option<Thing>,
-    pub treatment_img: Option<String>,
-    pub description: Option<String>,
-    pub treatment_type: Option<String>,
-    pub prescription: Option<String>,
-    pub symptoms: Option<String>,
-    pub treatment_cost: Option<f64>,
-    pub prescription_cost: Option<f64>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct NewVisit {
-    pub id: Thing,
-    pub created_at: Datetime,
-    pub is_open: bool,
-    pub visitor: Thing,
-    pub doctor: Option<Thing>,
-    pub treatment_img: Option<String>,
+    pub treatment_img: Option<TreatmentImg>,
     pub description: Option<String>,
     pub treatment_type: Option<String>,
     pub prescription: Option<String>,
@@ -60,13 +51,14 @@ pub struct UpdateVisitData {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SelectedVisit {
     pub id: Thing,
-    pub treatment_img: Option<String>,
+    pub treatment_img: Option<TreatmentImg>,
     pub description: Option<String>,
     pub treatment_type: Option<String>,
     pub prescription: Option<String>,
     pub treatment_cost: Option<f64>,
     pub prescription_cost: Option<f64>,
     pub doctor_name: Option<String>,
+    pub doctor_id: Option<Thing>,
     pub symptoms: Option<String>,
     pub created_at: Datetime,
     pub visitor_id: Thing,
@@ -74,16 +66,6 @@ pub struct SelectedVisit {
     pub visitor_birthdate: Datetime,
     pub visitor_phone: u32,
     pub visitor_file_number: u32,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct LastVisit {
-    created_at: Datetime,
-    description: String,
-    doctor_name: String,
-    id: Thing,
-    treatment: String,
-    treatment_img: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
