@@ -48,7 +48,10 @@ export default function VisitHistory() {
       })
       setVisitors(data)
     } catch (error) {
-      console.error(error)
+      toast({
+        title: "حدث خطأ ما!",
+        variant: "destructive"
+      })
     }
   }
 
@@ -74,7 +77,10 @@ export default function VisitHistory() {
         })
         return res
       } catch (error) {
-        console.error(error)
+        toast({
+          title: "حدث خطأ ما!",
+          variant: "destructive"
+        })
       }
     },
     enabled: !!selectedVisitorId // Only run query if a visitorId is selected
@@ -121,7 +127,10 @@ export default function VisitHistory() {
         })
         setVisitor(res)
       } catch (error) {
-        console.error(error)
+        toast({
+          title: "حدث خطأ ما",
+          variant: "destructive"
+        })
       }
     }
 

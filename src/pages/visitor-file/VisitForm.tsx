@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/shadcn/button"
 import { usePayment, useUser, useVisit } from "@/queries"
 import { surrealDbId } from "@/lib/utils"
 import { Visit } from "@/types/visit"
-import { toast } from "@/components/ui/use-toast"
 import useCanvas from "@/hooks/useCanvas"
 
 const INITIAL_FORM_DATA: {
@@ -76,25 +75,15 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
 
     updateVisit.mutate(visitData, {
       onSuccess: async () => {
-        await createNewPayment.mutate(
-          {
-            payment_type: "payment",
-            payment_method: "فيزا",
-            name: "treatment_cost",
-            category: "visits",
-            amount: parseFloat(formData?.treatment_cost ?? ""),
-            visit_id: surrealDbId(visit?.id),
-            pending: true
-          },
-          {
-            onError: () => {
-              toast({
-                title: "حدث خطأ عند حفظ حساب الجلسة",
-                variant: "destructive"
-              })
-            }
-          }
-        )
+        await createNewPayment.mutate({
+          payment_type: "payment",
+          payment_method: "فيزا",
+          name: "treatment_cost",
+          category: "visits",
+          amount: parseFloat(formData?.treatment_cost ?? ""),
+          visit_id: surrealDbId(visit?.id),
+          pending: true
+        })
       }
     })
   }

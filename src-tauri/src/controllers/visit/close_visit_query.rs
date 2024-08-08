@@ -13,6 +13,9 @@ pub async fn close_visit_query(visit_id: String) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn close_visit(visit_id: String) {
-    let _res = close_visit_query(visit_id);
+pub fn close_visit(visit_id: String) -> Result<(), String> {
+    match close_visit_query(visit_id) {
+        Ok(()) => Ok(()),
+        Err(err) => Err(err.to_string()),
+    }
 }

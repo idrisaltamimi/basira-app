@@ -68,6 +68,9 @@ async fn create_query(data: CreatePaymentData) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn create_payment(data: CreatePaymentData) {
-    let _res = create_query(data);
+pub fn create_payment(data: CreatePaymentData) -> Result<(), String> {
+    match create_query(data) {
+        Ok(()) => Ok(()),
+        Err(err) => Err(err.to_string()),
+    }
 }

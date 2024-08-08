@@ -6,6 +6,7 @@ import { TextField } from "@/components/form/Textfield"
 import { Visitor } from "@/lib/types"
 import { useVisitor } from "@/queries"
 import { surrealDbId } from "@/lib/utils"
+import { toast } from "@/components/ui/use-toast"
 
 export function OldVisitorForm() {
   const { createNewVisit } = useVisitor()
@@ -21,7 +22,10 @@ export function OldVisitorForm() {
       })
       setVisitors(data)
     } catch (error) {
-      console.log(error)
+      toast({
+        title: "حدث خطأ ما!",
+        variant: "destructive"
+      })
     }
   }
 

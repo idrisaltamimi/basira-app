@@ -47,6 +47,9 @@ pub async fn update_payment_query(data: UpdatePaymentData) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn update_payment(data: UpdatePaymentData) {
-    let _res = update_payment_query(data);
+pub fn update_payment(data: UpdatePaymentData) -> Result<(), String> {
+    match update_payment_query(data) {
+        Ok(()) => Ok(()),
+        Err(err) => Err(err.to_string()),
+    }
 }

@@ -1,10 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from "react"
 
 import { usePayment, useVisit } from "@/queries"
-import { Modal, Notification, RadioInput, TextField } from "@/components"
+import { Modal, RadioInput, TextField } from "@/components"
 import { Button } from "@/components/ui/shadcn/button"
 import { Label } from "@/components/ui/shadcn/label"
 import { formatCurrency } from "@/lib/utils"
+import { toast } from "@/components/ui/use-toast"
 
 type PaymentsActionsProps = {
   visitId: string
@@ -56,6 +57,9 @@ export default function PaymentsActions({
       {
         onSuccess: async () => {
           await closeOpenVisit.mutate(visitId)
+          toast({
+            title: "تم حفظ المحاسبة بنجاح"
+          })
           setOpen(false)
         }
       }
@@ -151,8 +155,6 @@ export default function PaymentsActions({
           </div>
         </form>
       </Modal>
-      {updatePayment.isSuccess && <Notification message="تم حفظ المحاسبة بنجاح" />}
-      {updatePayment.isError && <Notification message="حدث خطأ ما!" error />}
     </>
   )
 }

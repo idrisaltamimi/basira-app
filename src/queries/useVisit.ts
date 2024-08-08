@@ -36,7 +36,10 @@ export default function useVisit() {
         const data: OpenVisits[] = await invoke("get_visits")
         return data
       } catch (error) {
-        console.log(error)
+        toast({
+          title: "حدث خطأ ما!",
+          variant: "destructive"
+        })
       }
     }
   })
@@ -60,12 +63,17 @@ export default function useVisit() {
         const res = await invoke("close_visit", { visitId })
         return res
       } catch (error) {
-        console.error("Error closing visit:", error)
-        throw error
+        throw new Error(error as string)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_visits"] })
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ عند إنهاء الزيارة",
+        variant: "destructive"
+      })
     }
   })
 
@@ -99,7 +107,6 @@ export default function useVisit() {
         const res = await invoke("update_visit", { data })
         return res
       } catch (error) {
-        console.error(error)
         throw new Error(error as string)
       }
     },
@@ -127,7 +134,10 @@ export default function useVisit() {
         })
         return res
       } catch (error) {
-        console.error("Error getting last visit:", error)
+        toast({
+          title: "حدث خطأ ما!",
+          variant: "destructive"
+        })
       }
     }
   })

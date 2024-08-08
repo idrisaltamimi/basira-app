@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast"
 import { NewPayment, Payment, UpdatePaymentData } from "@/types/payment"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -49,6 +50,12 @@ export default function usePayment() {
       queryClient.invalidateQueries({
         queryKey: ["get_unpaid_payments", "get_paid_payments"]
       })
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ عند حفظ المحاسبة",
+        variant: "destructive"
+      })
     }
   })
 
@@ -74,7 +81,10 @@ export default function usePayment() {
         const res = await invoke("update_payment", { data })
         return res
       } catch (error) {
-        console.error(error)
+        toast({
+          title: "حدث خطأ ما!",
+          variant: "destructive"
+        })
       }
     },
     onSuccess: () => {

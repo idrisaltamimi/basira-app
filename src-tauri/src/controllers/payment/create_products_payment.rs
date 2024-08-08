@@ -1,10 +1,7 @@
 use anyhow::Result;
 use surrealdb::Response;
 
-use crate::{
-    connect::database,
-    structs::payment::CreatePaymentData,
-};
+use crate::{connect::database, structs::payment::CreatePaymentData};
 
 #[tokio::main]
 pub async fn create_payments_query(data: CreatePaymentData) -> Result<()> {
@@ -36,6 +33,9 @@ pub async fn create_payments_query(data: CreatePaymentData) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn create_products_payments(data: CreatePaymentData) {
-    let _res = create_payments_query(data);
+pub fn create_products_payments(data: CreatePaymentData) -> Result<(), String> {
+    match create_payments_query(data) {
+        Ok(()) => Ok(()),
+        Err(err) => Err(err.to_string()),
+    }
 }

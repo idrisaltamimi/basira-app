@@ -15,6 +15,9 @@ pub async fn delete_payment_query(payment_id: String) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn delete_payment(payment_id: String) {
-    let _res = delete_payment_query(payment_id);
+pub fn delete_payment(payment_id: String) -> Result<(), String> {
+    match delete_payment_query(payment_id) {
+        Ok(()) => Ok(()),
+        Err(err) => Err(err.to_string()),
+    }
 }

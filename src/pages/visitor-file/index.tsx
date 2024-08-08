@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/shadcn/input"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { CheckedState } from "@radix-ui/react-checkbox"
 import { FaEdit } from "react-icons/fa"
+import { toast } from "@/components/ui/use-toast"
 
 const newRecordData: MedicalHistory = {
   did_surgery: undefined,
@@ -48,7 +49,10 @@ export default function VisitorFile() {
         })
         return res
       } catch (error) {
-        console.error(error)
+        toast({
+          title: "حدث خطأ ما!",
+          variant: "destructive"
+        })
       }
     },
     enabled: !!visitorId
@@ -60,7 +64,10 @@ export default function VisitorFile() {
         const res: Visit = await invoke("get_visit", { visitorId })
         setVisit(res)
       } catch (error) {
-        console.log(error)
+        toast({
+          title: "حدث خطأ ما!",
+          variant: "destructive"
+        })
       }
     }
     getVisit()

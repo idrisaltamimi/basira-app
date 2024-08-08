@@ -4,10 +4,11 @@ import { FaAddressCard } from "react-icons/fa6"
 import { Button } from "@/components/ui/shadcn/button"
 import usePayment from "@/queries/usePayment"
 import { surrealDbId } from "@/lib/utils"
-import { Modal, Notification, RadioInput, TextField } from "@/components"
+import { Modal, RadioInput, TextField } from "@/components"
 import { useUser } from "@/queries"
 import { useQueryClient } from "@tanstack/react-query"
 import { Label } from "@/components/ui/shadcn/label"
+import { toast } from "@/components/ui/use-toast"
 
 const INITIAL_DATA: {
   amount: string
@@ -54,6 +55,9 @@ export default function AddSpending({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["get_paid_payments"] })
+          toast({
+            title: "تم إضافة المصاريف بنجاح"
+          })
           setRefetch(true)
           setIsOpen(false)
         }
@@ -126,7 +130,6 @@ export default function AddSpending({
           </div>
         </form>
       </Modal>
-      {createNewPayment.isSuccess && <Notification message="تم إضافة المصاريف بنجاح" />}
     </>
   )
 }

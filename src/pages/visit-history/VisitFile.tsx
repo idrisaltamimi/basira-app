@@ -10,7 +10,6 @@ import { calculateAge, formatCurrency, surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
 import useCanvas from "@/hooks/useCanvas"
 import { usePayment, useVisit } from "@/queries"
-import { toast } from "@/components/ui/use-toast"
 import { LuUndo2 } from "react-icons/lu"
 import { MdDeleteForever } from "react-icons/md"
 
@@ -76,25 +75,15 @@ export default function VisitFile({ visit }: { visit: Visit }) {
     updateVisit.mutate(visitData, {
       onSuccess: async () => {
         if (visit.treatment_cost === parseFloat(formData?.treatment_cost ?? "")) return
-        await createNewPayment.mutate(
-          {
-            payment_type: "payment",
-            payment_method: "فيزا",
-            name: "treatment_cost",
-            category: "visits",
-            amount: parseFloat(formData?.treatment_cost ?? ""),
-            visit_id: surrealDbId(visit?.id),
-            pending: true
-          },
-          {
-            onError: () => {
-              toast({
-                title: "حدث خطأ عند حفظ حساب الجلسة",
-                variant: "destructive"
-              })
-            }
-          }
-        )
+        await createNewPayment.mutate({
+          payment_type: "payment",
+          payment_method: "فيزا",
+          name: "treatment_cost",
+          category: "visits",
+          amount: parseFloat(formData?.treatment_cost ?? ""),
+          visit_id: surrealDbId(visit?.id),
+          pending: true
+        })
       }
     })
   }
