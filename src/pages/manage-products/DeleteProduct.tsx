@@ -3,7 +3,7 @@ import { FaTrash } from "react-icons/fa6"
 
 import { surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
-import { useProduct } from "@/hooks"
+import { useProduct } from "@/queries"
 import { Modal, TooltipWrapper } from "@/components"
 import { SurrealDbId } from "@/lib/types"
 

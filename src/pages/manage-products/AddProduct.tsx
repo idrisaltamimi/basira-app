@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useState } from "react"
 import { FaCartPlus } from "react-icons/fa6"
 
 import { Button } from "@/components/ui/shadcn/button"
-import { useProduct } from "@/hooks"
+import { useProduct } from "@/queries"
 import { Modal, TextField } from "@/components"
 
 export default function AddProduct() {

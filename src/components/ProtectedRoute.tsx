@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom"
 import { ComponentType, Suspense } from "react"
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 
 type ProtectedRouteProps = {
   Component: ComponentType

@@ -4,7 +4,7 @@ import ReactDatePicker from "react-datepicker"
 import { Button } from "@/components/ui/shadcn/button"
 import { Label } from "@/components/ui/shadcn/label"
 import { TiUserAdd } from "react-icons/ti"
-import { useAuth } from "@/hooks"
+import { useAuth } from "@/queries"
 import {
   Spinner,
   Modal,

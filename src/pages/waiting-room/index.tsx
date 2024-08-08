@@ -7,7 +7,7 @@ import { calculateAge, formatDate, surrealDbId } from "@/lib/utils"
 
 import { Button } from "@/components/ui/shadcn/button"
 
-import useVisit from "@/hooks/useVisit"
+import useVisit from "@/queries/useVisit"
 import TableContent from "@/components/ui/TableContent"
 import { ColumnDef } from "@tanstack/react-table"
 import { OrderByHeader, TooltipWrapper } from "@/components"

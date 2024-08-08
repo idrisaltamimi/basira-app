@@ -91,8 +91,7 @@ export default function useVisitor() {
       } else {
         toast({
           variant: "destructive",
-          title: "!حدث خطأ ما! حاول مرة أخرى",
-          duration: 3000
+          title: "!حدث خطأ ما! حاول مرة أخرى"
         })
       }
     }
@@ -116,6 +115,7 @@ export default function useVisitor() {
     },
     onError: () => {
       toast({
+        variant: "destructive",
         title: "!حدث خطأ ما! حاول مرة أخرى"
       })
     }

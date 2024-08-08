@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 
 type ProtectedElementProps = {
   children: ReactNode

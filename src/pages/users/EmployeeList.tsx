@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import { User } from "@/types/user"
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 import { AddSalaryForm } from "./AddSalaryForm"
 import { AddUser } from "./AddUser"
 import { Badge } from "@/components/ui/shadcn/badge"

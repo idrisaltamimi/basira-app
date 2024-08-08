@@ -1,7 +1,7 @@
 import { TooltipWrapper } from "@/components"
 import Modal from "@/components/ui/Modal"
 import { Button } from "@/components/ui/shadcn/button"
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 import { useState } from "react"
 import { FaUserLarge, FaUserLargeSlash } from "react-icons/fa6"
 

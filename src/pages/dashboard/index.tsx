@@ -6,7 +6,7 @@ import { GiShoppingBag } from "react-icons/gi"
 import { IoIosSettings } from "react-icons/io"
 import { FaCartPlus } from "react-icons/fa6"
 
-import { useAuth } from "@/hooks"
+import { useAuth } from "@/queries"
 import { Header } from "@/components"
 import { Button } from "@/components/ui/shadcn/button"
 import logoBg from "../../assets/logo.svg"

@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/tauri"
 import { Button } from "@/components/ui/shadcn/button"
 import { TextField } from "@/components/form/Textfield"
 import { Visitor } from "@/lib/types"
-import { useVisitor } from "@/hooks"
+import { useVisitor } from "@/queries"
 import { surrealDbId } from "@/lib/utils"
 
 export function OldVisitorForm() {

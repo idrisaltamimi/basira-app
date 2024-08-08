@@ -15,7 +15,7 @@ import {
 } from "recharts"
 
 import { cn, formatCurrency } from "@/lib/utils"
-import { useStatics } from "@/hooks"
+import { useStatics } from "@/queries"
 import { useQuery } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 

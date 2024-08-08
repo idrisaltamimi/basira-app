@@ -1,17 +1,18 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import CanvasDraw from "react-canvas-draw"
 import { LuUndo2 } from "react-icons/lu"
 import { MdDeleteForever } from "react-icons/md"
 import muscularSystem from "../../assets/muscular-system.jpg"
-import { compressToUTF16, decompressFromUTF16 } from "lz-string"
+import { decompressFromUTF16 } from "lz-string"
 
 import { TextField } from "@/components/form/Textfield"
 import { Textarea } from "@/components/ui/shadcn/textarea"
 import { Button } from "@/components/ui/shadcn/button"
-import { usePayment, useUser, useVisit } from "@/hooks"
+import { usePayment, useUser, useVisit } from "@/queries"
 import { surrealDbId } from "@/lib/utils"
 import { Visit } from "@/types/visit"
 import { toast } from "@/components/ui/use-toast"
+import useCanvas from "@/hooks/useCanvas"
 
 const INITIAL_FORM_DATA: {
   treatment_img?: string
@@ -75,18 +76,25 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
 
     updateVisit.mutate(visitData, {
       onSuccess: async () => {
-        await createNewPayment.mutate({
-          payment_type: "payment",
-          payment_method: "فيزا",
-          name: "treatment_cost",
-          category: "visits",
-          amount: parseFloat(formData?.treatment_cost ?? ""),
-          visit_id: surrealDbId(visit?.id),
-          pending: true
-        })
-        toast({
-          title: "تم حفظ الزيارة بنجاح"
-        })
+        await createNewPayment.mutate(
+          {
+            payment_type: "payment",
+            payment_method: "فيزا",
+            name: "treatment_cost",
+            category: "visits",
+            amount: parseFloat(formData?.treatment_cost ?? ""),
+            visit_id: surrealDbId(visit?.id),
+            pending: true
+          },
+          {
+            onError: () => {
+              toast({
+                title: "حدث خطأ عند حفظ حساب الجلسة",
+                variant: "destructive"
+              })
+            }
+          }
+        )
       }
     })
   }
@@ -237,33 +245,4 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
       </div>
     </form>
   )
-}
-
-function useCanvas() {
-  const [color, setColor] = useState("rgb(0, 0, 0)")
-
-  const canvasRef = useRef<CanvasDraw | null>(null)
-
-  const selectColor = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setColor(e.currentTarget.value)
-  }
-
-  const undo = () => {
-    if (!canvasRef.current) return
-    canvasRef.current.undo()
-  }
-
-  const clear = () => {
-    if (!canvasRef.current) return
-    canvasRef.current.clear()
-  }
-
-  const image = () => {
-    if (!canvasRef.current) return ""
-    const imgString = canvasRef.current.getSaveData()
-    const compressToUTF16Image = compressToUTF16(imgString)
-    return compressToUTF16Image
-  }
-
-  return { color, selectColor, undo, clear, image, canvasRef }
 }

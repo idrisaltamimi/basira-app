@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react"
 
-import { useAuth } from "@/hooks"
+import { useAuth } from "@/queries"
 import Spinner from "@/components/ui/Spinner"
 import logoBg from "../../assets/logo.svg"
 

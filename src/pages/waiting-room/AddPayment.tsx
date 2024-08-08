@@ -4,7 +4,7 @@ import { MdPayments } from "react-icons/md"
 import type { OpenVisits } from "@/lib/types"
 import { surrealDbId } from "@/lib/utils"
 
-import { usePayment } from "@/hooks"
+import { usePayment } from "@/queries"
 import { Button } from "@/components/ui/shadcn/button"
 import { TextField, RadioInput, Modal, TooltipWrapper } from "@/components"
 import { Label } from "@/components/ui/shadcn/label"

@@ -1,5 +1,5 @@
 import { formatCurrency, surrealDbId } from "@/lib/utils"
-import { usePayment, useVisit } from "@/hooks"
+import { usePayment, useVisit } from "@/queries"
 import { Button } from "@/components/ui/shadcn/button"
 import { FormEvent, useState } from "react"
 import { Label } from "@/components/ui/shadcn/label"

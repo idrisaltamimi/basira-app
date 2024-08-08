@@ -100,10 +100,20 @@ export default function useVisit() {
         return res
       } catch (error) {
         console.error(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_visit"] })
+      toast({
+        title: "تم حفظ الزيارة بنجاح"
+      })
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "!حدث خطأ ما! حاول مرة أخرى"
+      })
     }
   })
 

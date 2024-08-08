@@ -1,7 +1,7 @@
 import { FormEvent, ReactNode, useState } from "react"
 
 import { Button } from "@/components/ui/shadcn/button"
-import { usePayment } from "@/hooks"
+import { usePayment } from "@/queries"
 import { Modal } from "@/components"
 import { surrealDbId } from "@/lib/utils"
 import { SurrealDbId } from "@/lib/types"

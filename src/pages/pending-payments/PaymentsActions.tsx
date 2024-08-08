@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react"
 
-import { usePayment, useVisit } from "@/hooks"
+import { usePayment, useVisit } from "@/queries"
 import { Modal, Notification, RadioInput, TextField } from "@/components"
 import { Button } from "@/components/ui/shadcn/button"
 import { Label } from "@/components/ui/shadcn/label"

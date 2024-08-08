@@ -3,7 +3,7 @@ import { FaEdit } from "react-icons/fa"
 
 import { surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
-import { useProduct } from "@/hooks"
+import { useProduct } from "@/queries"
 import { Modal, RadioInput, TextField, TooltipWrapper } from "@/components"
 import { Product } from "@/types/prodcut"
 import { Label } from "@/components/ui/shadcn/label"

@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { TextField } from "@/components/form/Textfield"
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 import { Button } from "@/components/ui/shadcn/button"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { DatePickerWrapper } from "@/components"

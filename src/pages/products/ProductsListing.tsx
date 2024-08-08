@@ -5,7 +5,7 @@ import { cn, formatCurrency, surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
 import { Input } from "@/components/ui/shadcn/input"
 import { Product } from "@/types/prodcut"
-import { useProduct } from "@/hooks"
+import { useProduct } from "@/queries"
 
 type ProductsListingProps = {
   setAddedProducts: React.Dispatch<React.SetStateAction<Product[]>>

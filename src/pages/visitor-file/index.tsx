@@ -1,6 +1,6 @@
 import VisitForm from "./VisitForm"
 import { calculateAge } from "@/lib/utils"
-import { useRecord } from "@/hooks"
+import { useRecord } from "@/queries"
 import { useQuery } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 import { MedicalHistory, Record } from "@/types/visitor-file"

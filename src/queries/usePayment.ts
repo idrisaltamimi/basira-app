@@ -42,6 +42,7 @@ export default function usePayment() {
         return res
       } catch (error) {
         console.log(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: () => {

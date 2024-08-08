@@ -18,6 +18,7 @@ import { TextField } from "@/components"
 import { Label } from "@/components/ui/shadcn/label"
 import VisitFile from "./VisitFile"
 import UpdateVisitor from "./UpdateVisitor"
+import { toast } from "@/components/ui/use-toast"
 
 type LastVisitsHistory = {
   id: SurrealDbId
@@ -79,6 +80,19 @@ export default function VisitHistory() {
     enabled: !!selectedVisitorId // Only run query if a visitorId is selected
   })
 
+  useEffect(() => {
+    if (
+      !visitsHistory ||
+      visitsHistory.length < 1 ||
+      selectedVisitId ||
+      !visitors ||
+      selectedVisit
+    ) {
+      return
+    }
+    setSelectedVisitId(surrealDbId(visitsHistory[0].id))
+  }, [visitsHistory])
+
   const { data: selectedVisit } = useQuery<Visit | undefined>({
     queryKey: ["get_selected_visit", selectedVisitId],
     queryFn: async () => {
@@ -88,7 +102,11 @@ export default function VisitHistory() {
         })
         return res
       } catch (error) {
-        console.error(error)
+        toast({
+          title: "حدث خطأ ما",
+          description: error as string,
+          variant: "destructive"
+        })
       }
     },
     enabled: !!selectedVisitId // Only run query if a visitorId is selected
@@ -109,6 +127,8 @@ export default function VisitHistory() {
 
     getVisitor()
   }, [selectedVisitorId])
+
+  console.log("render")
 
   return (
     <div>

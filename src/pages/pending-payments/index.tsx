@@ -5,7 +5,7 @@ import {
   AccordionTrigger
 } from "@/components/ui/shadcn/accordion"
 
-import { usePayment } from "@/hooks"
+import { usePayment } from "@/queries"
 import { Payment } from "@/types/payment"
 import { formatCurrency, surrealDbId } from "@/lib/utils"
 import { SurrealDbId } from "@/lib/types"

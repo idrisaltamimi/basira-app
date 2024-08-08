@@ -1,12 +1,104 @@
-import { Visit } from "@/types/visit"
-import { decompressFromUTF16 } from "lz-string"
+import { useEffect, useState } from "react"
 import CanvasDraw from "react-canvas-draw"
+import { decompressFromUTF16 } from "lz-string"
+
+import { Visit } from "@/types/visit"
 import muscularSystem from "@/assets/muscular-system.jpg"
 import { Textarea } from "@/components/ui/shadcn/textarea"
 import { TextField } from "@/components"
-import { calculateAge, formatCurrency } from "@/lib/utils"
+import { calculateAge, formatCurrency, surrealDbId } from "@/lib/utils"
+import { Button } from "@/components/ui/shadcn/button"
+import useCanvas from "@/hooks/useCanvas"
+import { usePayment, useVisit } from "@/queries"
+import { toast } from "@/components/ui/use-toast"
+import { LuUndo2 } from "react-icons/lu"
+import { MdDeleteForever } from "react-icons/md"
+
+const INITIAL_FORM_DATA: {
+  treatment_img?: string
+  description?: string
+  treatment_type?: string
+  doctor_name?: string
+  prescription?: string
+  treatment_cost?: string
+  prescription_cost?: string
+  symptoms?: string
+} = {
+  treatment_img: "",
+  description: "",
+  treatment_type: "",
+  prescription: "",
+  symptoms: "",
+  treatment_cost: "",
+  prescription_cost: ""
+}
 
 export default function VisitFile({ visit }: { visit: Visit }) {
+  const { undo, clear, image, selectColor, color, canvasRef } = useCanvas()
+  const { updateVisit } = useVisit()
+  const { createNewPayment } = usePayment()
+
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA)
+
+  const handleChange = (e: React.ChangeEvent) => {
+    const { name, value } = e.target as HTMLInputElement
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  useEffect(() => {
+    if (!visit) return
+    setFormData({
+      treatment_img: visit.treatment_img,
+      description: visit.description,
+      treatment_type: visit.treatment_type,
+      prescription: visit.prescription,
+      symptoms: visit.symptoms,
+      treatment_cost: visit.treatment_cost?.toString(),
+      prescription_cost: visit.prescription_cost?.toString()
+    })
+  }, [visit])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    const visitData = {
+      treatment_img: image(),
+      description: formData.description ?? "",
+      treatment_type: formData.treatment_type ?? "",
+      prescription: formData.prescription ?? "",
+      symptoms: formData.symptoms ?? "",
+      treatment_cost: parseFloat(formData?.treatment_cost ?? ""),
+      prescription_cost: parseFloat("0"),
+      doctor: surrealDbId(visit.doctor_id),
+      visit_id: surrealDbId(visit?.id)
+    }
+
+    updateVisit.mutate(visitData, {
+      onSuccess: async () => {
+        if (visit.treatment_cost === parseFloat(formData?.treatment_cost ?? "")) return
+        await createNewPayment.mutate(
+          {
+            payment_type: "payment",
+            payment_method: "فيزا",
+            name: "treatment_cost",
+            category: "visits",
+            amount: parseFloat(formData?.treatment_cost ?? ""),
+            visit_id: surrealDbId(visit?.id),
+            pending: true
+          },
+          {
+            onError: () => {
+              toast({
+                title: "حدث خطأ عند حفظ حساب الجلسة",
+                variant: "destructive"
+              })
+            }
+          }
+        )
+      }
+    })
+  }
+
   return (
     <div>
       <div className="flex justify-between w-full gap-6">
@@ -37,18 +129,74 @@ export default function VisitFile({ visit }: { visit: Visit }) {
           </div>
         </div>
       </div>
+      <div className="flex items-center gap-4 mt-6 mb-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={undo}
+          className="flex gap-2"
+        >
+          <LuUndo2 className="-scale-x-100" />
+          تراجع
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={clear}
+          className="flex gap-2"
+        >
+          <MdDeleteForever />
+          حذف
+        </Button>
+
+        <div className="flex gap-1 mr-auto">
+          <Button
+            type="button"
+            size="icon"
+            className="w-6 h-6 bg-black rounded-full"
+            value="rgb(0, 0, 0)"
+            onClick={selectColor}
+          />
+          <Button
+            type="button"
+            size="icon"
+            className="w-6 h-6 bg-red-700 rounded-full"
+            value="rgb(185 28 28)"
+            onClick={selectColor}
+          />
+          <Button
+            type="button"
+            size="icon"
+            className="w-6 h-6 bg-blue-700 rounded-full"
+            value="rgb(29 78 216)"
+            onClick={selectColor}
+          />
+          <Button
+            type="button"
+            size="icon"
+            className="w-6 h-6 bg-green-700 rounded-full"
+            value="rgb(21 128 61)"
+            onClick={selectColor}
+          />
+        </div>
+      </div>
       <div className="relative bg-white w-[900px] h-[377.9px] mx-auto rounded-3xl">
         <CanvasDraw
           className="relative z-10"
+          ref={canvasRef}
           backgroundColor="transparent"
           hideGrid
-          disabled
+          brushColor={color}
+          catenaryColor={color}
           brushRadius={2}
           lazyRadius={0}
           loadTimeOffset={0}
           canvasWidth={900}
           canvasHeight={377.9}
-          saveData={decompressFromUTF16(visit.treatment_img ?? "")}
+          saveData={decompressFromUTF16(formData.treatment_img ?? "")}
         />
 
         <img
@@ -60,7 +208,7 @@ export default function VisitFile({ visit }: { visit: Visit }) {
         />
       </div>
 
-      <div className="flex flex-col gap-4 mt-6">
+      <form className="flex flex-col gap-4 mt-6" onSubmit={handleSubmit}>
         <h2>التوضيحات</h2>
         <Textarea
           id="description"
@@ -68,7 +216,7 @@ export default function VisitFile({ visit }: { visit: Visit }) {
           placeholder=""
           className="mt-2 text-base font-normal text-black rounded-3xl disabled:text-black disabled:opacity-100"
           value={visit.description}
-          disabled
+          onChange={handleChange}
         />
 
         <div className="flex gap-4">
@@ -77,7 +225,7 @@ export default function VisitFile({ visit }: { visit: Visit }) {
             name="symptoms"
             value={visit.symptoms}
             className="disabled:text-black disabled:opacity-100"
-            disabled
+            onChange={handleChange}
           />
         </div>
         <div className="flex gap-4">
@@ -86,34 +234,29 @@ export default function VisitFile({ visit }: { visit: Visit }) {
             name="treatment_type"
             value={visit.treatment_type}
             className="disabled:text-black disabled:opacity-100"
-            disabled
+            onChange={handleChange}
           />
           <TextField
             label="اسم العلاج"
             name="prescription"
             value={visit.prescription}
             className="disabled:text-black disabled:opacity-100"
-            disabled
+            onChange={handleChange}
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="w-1/2 pl-2">
           <TextField
             label="حساب الجلسة"
             name="treatment_cost"
             value={formatCurrency(visit.treatment_cost ?? 0)}
             className="disabled:text-black disabled:opacity-100"
-            disabled
-          />
-          <TextField
-            label="حساب الأدوية"
-            name="prescription_cost"
-            value={formatCurrency(visit.prescription_cost ?? 0)}
-            className="disabled:text-black disabled:opacity-100"
-            disabled
+            onChange={handleChange}
           />
         </div>
-      </div>
+
+        <Button className="self-start mt-4 px-14">حفظ</Button>
+      </form>
     </div>
   )
 }

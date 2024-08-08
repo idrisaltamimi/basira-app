@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react"
 import { FaUserLargeSlash } from "react-icons/fa6"
 
-import { useVisit } from "@/hooks"
+import { useVisit } from "@/queries"
 import { surrealDbId } from "@/lib/utils"
 import { Modal, TooltipWrapper } from "@/components"
 import { Button } from "@/components/ui/shadcn/button"

@@ -1,4 +1,4 @@
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 import { getInitials } from "@/lib/utils"
 import logo from "../../assets/logo.png"
 

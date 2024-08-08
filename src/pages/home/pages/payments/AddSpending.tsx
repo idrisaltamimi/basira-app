@@ -2,10 +2,10 @@ import { ChangeEvent, FormEvent, useState } from "react"
 import { FaAddressCard } from "react-icons/fa6"
 
 import { Button } from "@/components/ui/shadcn/button"
-import usePayment from "@/hooks/usePayment"
+import usePayment from "@/queries/usePayment"
 import { surrealDbId } from "@/lib/utils"
 import { Modal, Notification, RadioInput, TextField } from "@/components"
-import { useUser } from "@/hooks"
+import { useUser } from "@/queries"
 import { useQueryClient } from "@tanstack/react-query"
 import { Label } from "@/components/ui/shadcn/label"
 

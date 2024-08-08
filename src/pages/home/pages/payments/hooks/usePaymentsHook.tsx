@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table"
-import usePayment from "@/hooks/usePayment"
+import usePayment from "@/queries/usePayment"
 import { columns } from "./columns"
 import { Payment } from "@/types/payment"
 import { invoke } from "@tauri-apps/api/tauri"
