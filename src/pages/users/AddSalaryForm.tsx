@@ -38,7 +38,7 @@ export function AddSalaryForm({ userId, userName }: AddSalaryDialogProps) {
 
     await createNewPayment.mutate(
       {
-        name: formData.salary_type,
+        name: userName,
         payment_type: "spending",
         category: "salaries",
         amount: parseFloat(formData.amount),

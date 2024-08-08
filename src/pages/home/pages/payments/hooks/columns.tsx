@@ -15,9 +15,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "name",
     header: "الاسم",
     cell: ({ row }) => (
-      <div>
-        {getPaymentName(row.getValue("name") === "" ? "مشتري" : row.getValue("name"))}
-      </div>
+      <div>{row.getValue("name") === "" ? "مشتري" : row.getValue("name")}</div>
     )
   },
   {
@@ -92,16 +90,5 @@ const getPaymentType = (paymentType: string) => {
       return "مصروفات"
     default:
       return paymentType
-  }
-}
-
-const getPaymentName = (name: string) => {
-  switch (name) {
-    case "شهري":
-      return `راتب ${name}`
-    case "يومي":
-      return `راتب ${name}`
-    default:
-      return name
   }
 }
