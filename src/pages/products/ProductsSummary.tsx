@@ -26,12 +26,14 @@ type FormData = {
   payment_method: "كاش" | "فيزا"
   name: string
   discount: string
+  payedAmount: string
 }
 
 const INITIAL_DATA: FormData = {
   payment_method: "فيزا",
   name: "buyer",
-  discount: ""
+  discount: "",
+  payedAmount: ""
 }
 
 export default function ProductsSummary({
@@ -120,21 +122,39 @@ export default function ProductsSummary({
           </SelectGroup>
         </SelectContent>
       </Select>
-      {formData.name === "buyer" && (
-        <div className="flex items-end gap-2 mt-3 w-80">
-          <TextField
-            label="كوبون"
-            name="discount"
-            value={formData.discount}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, discount: e.target.value }))
-            }
-            type="number"
-            className="basis-full"
-          />
-          <p className="flex items-center font-bold basis-full h-11">%</p>
-        </div>
-      )}
+      <div className="flex items-center w-full gap-4 mt-3">
+        {formData.name === "buyer" && (
+          <div className="flex items-end gap-2">
+            <TextField
+              label="كوبون"
+              name="discount"
+              value={formData.discount}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, discount: e.target.value }))
+              }
+              type="number"
+              className="basis-full"
+            />
+            <p className="flex items-center font-bold h-11">%</p>
+          </div>
+        )}
+
+        {formData.payment_method === "كاش" && (
+          <div className="flex items-end gap-2 ">
+            <TextField
+              label="المبلغ المدفوع"
+              name="payedAmount"
+              value={formData.payedAmount}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, payedAmount: e.target.value }))
+              }
+              type="number"
+              className="basis-full"
+            />
+            <p className="flex items-center font-bold h-11">ر.ع</p>
+          </div>
+        )}
+      </div>
 
       <table className="w-full mt-10">
         <thead>
@@ -193,6 +213,36 @@ export default function ProductsSummary({
                   )}
             </th>
           </tr>
+          {formData.payment_method === "كاش" && (
+            <tr className="w-full border-t-[1px]">
+              <th className="py-4 text-start" colSpan={3}>
+                المبلغ المتبقي
+              </th>
+              <th className="py-4 text-start">
+                {!isNaN(parseFloat(formData.payedAmount)) && (
+                  <>
+                    <p className="font-bold">المبلغ المتبقي</p>
+                    <div className="text-destructive">
+                      {formData.discount === ""
+                        ? formatCurrency(
+                            -(
+                              paymentSum(addedProducts) - parseFloat(formData.payedAmount)
+                            )
+                          )
+                        : formatCurrency(
+                            -(
+                              calculateNewTotal(
+                                paymentSum(addedProducts),
+                                parseInt(formData.discount)
+                              ).newTotalValue - parseFloat(formData.payedAmount)
+                            )
+                          )}
+                    </div>
+                  </>
+                )}
+              </th>
+            </tr>
+          )}
         </tfoot>
       </table>
       <form onSubmit={handleSubmit}>

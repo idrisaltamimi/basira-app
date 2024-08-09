@@ -17,11 +17,13 @@ type PaymentForm = {
   payment_method: "فيزا" | "كاش"
   total?: number
   discount: string
+  payedAmount: string
 }
 
 const INITIAL_FORM: PaymentForm = {
   payment_method: "فيزا",
-  discount: ""
+  discount: "",
+  payedAmount: ""
 }
 
 export default function PaymentsActions({
@@ -84,7 +86,7 @@ export default function PaymentsActions({
         onOpenChange={setOpen}
         trigger={
           <Button size="sm" variant="secondary">
-            تم الدفع
+            إنهاء المحاسبة
           </Button>
         }
       >
@@ -119,7 +121,21 @@ export default function PaymentsActions({
             />
             <p className="flex items-center font-bold basis-full h-11">%</p>
           </div>
+
           <hr className="mt-4 mb-0" />
+          {formData.payment_method === "كاش" && (
+            <div className="flex items-end gap-2">
+              <TextField
+                label="المبلغ المدفوع"
+                name="payedAmount"
+                value={formData.payedAmount}
+                onChange={handleChange}
+                type="number"
+                className="basis-full"
+              />
+              <p className="flex items-center font-bold basis-full h-11">ر.ع</p>
+            </div>
+          )}
           <div className="grid grid-cols-[120px_1fr] ">
             {formData.discount !== "" && (
               <>
@@ -141,6 +157,21 @@ export default function PaymentsActions({
                       .newTotalValue
                   )}
             </div>
+            {!isNaN(parseFloat(formData.payedAmount)) && (
+              <>
+                <p className="font-bold">المبلغ المتبقي</p>
+                <div className="font-bold text-destructive">
+                  {formData.discount === ""
+                    ? formatCurrency(-(totalAmount - parseFloat(formData.payedAmount)))
+                    : formatCurrency(
+                        -(
+                          calculateNewTotal(totalAmount, parseInt(formData.discount))
+                            .newTotalValue - parseFloat(formData.payedAmount)
+                        )
+                      )}
+                </div>
+              </>
+            )}
           </div>
           <div className="flex gap-4 mt-6">
             <Button fullWidth>نعم</Button>
