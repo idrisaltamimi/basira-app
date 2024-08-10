@@ -214,39 +214,36 @@ export default function ProductsSummary({
             </th>
           </tr>
           {formData.payment_method === "كاش" && (
-            <tr className="w-full border-t-[1px]">
-              <th className="py-4 text-start" colSpan={3}>
+            <tr className="w-full">
+              <th className="text-start" colSpan={3}>
                 المبلغ المتبقي
               </th>
-              <th className="py-4 text-start">
+              <th className="text-start">
                 {!isNaN(parseFloat(formData.payedAmount)) && (
-                  <>
-                    <p className="font-bold">المبلغ المتبقي</p>
-                    <div className="text-destructive">
-                      {formData.discount === ""
-                        ? formatCurrency(
-                            -(
-                              paymentSum(addedProducts) - parseFloat(formData.payedAmount)
-                            )
+                  <div className="text-destructive">
+                    {formData.discount === ""
+                      ? formatCurrency(
+                          -(paymentSum(addedProducts) - parseFloat(formData.payedAmount))
+                        )
+                      : formatCurrency(
+                          -(
+                            calculateNewTotal(
+                              paymentSum(addedProducts),
+                              parseInt(formData.discount)
+                            ).newTotalValue - parseFloat(formData.payedAmount)
                           )
-                        : formatCurrency(
-                            -(
-                              calculateNewTotal(
-                                paymentSum(addedProducts),
-                                parseInt(formData.discount)
-                              ).newTotalValue - parseFloat(formData.payedAmount)
-                            )
-                          )}
-                    </div>
-                  </>
+                        )}
+                  </div>
                 )}
               </th>
             </tr>
           )}
         </tfoot>
       </table>
-      <form onSubmit={handleSubmit}>
-        <Button disabled={addedProducts.length <= 0}>أرسل</Button>
+      <form onSubmit={handleSubmit} className="mt-6 w-[200px] flex">
+        <Button disabled={addedProducts.length <= 0} fullWidth>
+          أرسل
+        </Button>
       </form>
       {createProductPayments.isSuccess && (
         <Notification message="تم إضافة المنتج بنجاح" />
