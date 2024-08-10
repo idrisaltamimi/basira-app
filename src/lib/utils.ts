@@ -128,3 +128,7 @@ export function isValidNumber(input: any): input is number {
   // Check if the converted number is finite and not NaN
   return Number.isFinite(number) && !Number.isNaN(number)
 }
+
+export function escapeBackslashes(input: string): string {
+  return input.replace(/\\/g, "\\\\")
+}

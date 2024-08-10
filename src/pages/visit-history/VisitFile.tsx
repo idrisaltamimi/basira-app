@@ -6,7 +6,7 @@ import { Visit } from "@/types/visit"
 import muscularSystem from "@/assets/muscular-system.jpg"
 import { Textarea } from "@/components/ui/shadcn/textarea"
 import { TextField } from "@/components"
-import { calculateAge, formatCurrency, surrealDbId } from "@/lib/utils"
+import { calculateAge, surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
 import useCanvas from "@/hooks/useCanvas"
 import { usePayment, useVisit } from "@/queries"
@@ -204,7 +204,7 @@ export default function VisitFile({ visit }: { visit: Visit }) {
           name="description"
           placeholder=""
           className="mt-2 text-base font-normal text-black rounded-3xl disabled:text-black disabled:opacity-100"
-          value={visit.description}
+          value={formData.description}
           onChange={handleChange}
         />
 
@@ -212,7 +212,7 @@ export default function VisitFile({ visit }: { visit: Visit }) {
           <TextField
             label="الأعراض التي يعاني منها المريض"
             name="symptoms"
-            value={visit.symptoms}
+            value={formData.symptoms}
             className="disabled:text-black disabled:opacity-100"
             onChange={handleChange}
           />
@@ -221,14 +221,14 @@ export default function VisitFile({ visit }: { visit: Visit }) {
           <TextField
             label="نوع العلاج"
             name="treatment_type"
-            value={visit.treatment_type}
+            value={formData.treatment_type}
             className="disabled:text-black disabled:opacity-100"
             onChange={handleChange}
           />
           <TextField
             label="اسم العلاج"
             name="prescription"
-            value={visit.prescription}
+            value={formData.prescription}
             className="disabled:text-black disabled:opacity-100"
             onChange={handleChange}
           />
@@ -238,7 +238,8 @@ export default function VisitFile({ visit }: { visit: Visit }) {
           <TextField
             label="حساب الجلسة"
             name="treatment_cost"
-            value={formatCurrency(visit.treatment_cost ?? 0)}
+            type="number"
+            value={formData.treatment_cost}
             className="disabled:text-black disabled:opacity-100"
             onChange={handleChange}
           />

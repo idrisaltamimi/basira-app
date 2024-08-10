@@ -1,5 +1,6 @@
 import { toast } from "@/components/ui/use-toast"
 import { OpenVisits, SurrealDbId } from "@/lib/types"
+import { escapeBackslashes } from "@/lib/utils"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 
@@ -104,9 +105,19 @@ export default function useVisit() {
   const updateVisit = useMutation({
     mutationFn: async (data: updateVisit) => {
       try {
-        const res = await invoke("update_visit", { data })
+        console.log(data.treatment_img)
+        const res = await invoke("update_visit", {
+          data: {
+            ...data,
+            description: escapeBackslashes(data.description),
+            treatment_type: escapeBackslashes(data.treatment_type),
+            prescription: escapeBackslashes(data.prescription),
+            symptoms: escapeBackslashes(data.symptoms)
+          }
+        })
         return res
       } catch (error) {
+        console.log(error)
         throw new Error(error as string)
       }
     },

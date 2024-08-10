@@ -23,11 +23,13 @@ pub async fn update_visit_query(data: UpdateVisitData) -> Result<()> {
 
     if treatment_img == "NULL" {
         if let Some(result) = image_result {
+            println!("delete");
             let image_sql = format!("DELETE image WHERE id = image:{}", result.id.id);
             let _image_response: Response = db.query(image_sql).await?;
         }
     } else {
         if let Some(result) = image_result {
+            println!("update");
             let image_sql = format!(
                 "UPDATE image SET image = '{}' WHERE id = image:{}",
                 treatment_img, result.id.id
@@ -36,6 +38,7 @@ pub async fn update_visit_query(data: UpdateVisitData) -> Result<()> {
 
             image = format!("image:{}", result.id.id).to_string();
         } else {
+            println!("create");
             let image_sql = format!(
                 "CREATE image SET image = '{}', visit = '{}'",
                 treatment_img, data.visit_id
