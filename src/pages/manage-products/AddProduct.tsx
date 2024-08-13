@@ -7,28 +7,24 @@ import { Modal, TextField } from "@/components"
 
 export default function AddProduct() {
   const { createProduct } = useProduct()
-  const [formData, setFormData] = useState({ product_name: "", amount: "" })
+  const [formData, setFormData] = useState({ product_name: "", amount: "", quantity: "" })
   const [isOpen, setIsOpen] = useState(false)
 
   const handleChange = (e: ChangeEvent) => {
     const { name, value } = e.target as HTMLInputElement
 
-    if (name === "status") {
-      setFormData((prev) => ({ ...prev, [name]: value === "true" }))
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }))
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
-    const { amount, ...rest } = formData
+    const { amount, quantity, ...rest } = formData
     createProduct.mutate(
       {
         ...rest,
         amount: parseFloat(amount.toString()),
-        status: true
+        quantity: parseInt(quantity.toString())
       },
       {
         onSuccess: () => {
@@ -43,7 +39,7 @@ export default function AddProduct() {
       open={isOpen}
       onOpenChange={setIsOpen}
       trigger={
-        <Button size={"sm"} variant={"secondary"} className="flex items-center gap-4">
+        <Button size={"sm"} className="flex items-center gap-4">
           <FaCartPlus />
           <span>أضف منتج</span>
         </Button>
@@ -62,14 +58,24 @@ export default function AddProduct() {
           label="سعر المنتج"
           id="amount"
           name="amount"
+          type="number"
           value={formData.amount}
+          onChange={handleChange}
+        />
+
+        <TextField
+          label="العدد"
+          id="quantity"
+          name="quantity"
+          type="number"
+          value={formData.quantity}
           onChange={handleChange}
         />
 
         <div className="flex gap-6 mt-4">
           <Button className="basis-full">احفظ</Button>
           <Button
-            variant={"secondary"}
+            variant="secondary"
             className="basis-full"
             onClick={() => setIsOpen(false)}
             type="button"

@@ -5,7 +5,7 @@ import { surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
 import { useProduct } from "@/queries"
 import { Modal, RadioInput, TextField, TooltipWrapper } from "@/components"
-import { Product } from "@/types/prodcut"
+import { Product } from "@/types/product"
 import { Label } from "@/components/ui/shadcn/label"
 
 type EditProductProps = {
@@ -30,12 +30,13 @@ export default function EditProduct({ product }: EditProductProps) {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
 
-    const { id, amount, ...rest } = formData
+    const { id, amount, status, quantity, ...rest } = formData
     updateProduct.mutate(
       {
         ...rest,
         id: surrealDbId(id),
-        amount: parseFloat(amount.toString())
+        amount: parseFloat(amount.toString()),
+        quantity: parseInt(quantity.toString())
       },
       {
         onSuccess: () => {

@@ -5,4 +5,5 @@ export type Product = {
   product_name: string
   amount: number
   status: boolean
+  quantity: number
 }

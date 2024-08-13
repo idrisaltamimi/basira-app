@@ -4,7 +4,7 @@ import { cn, formatCurrency, surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
 import { Input } from "@/components/ui/shadcn/input"
 import { useProduct } from "@/queries"
-import { Product } from "@/types/prodcut"
+import { Product } from "@/types/product"
 import EditProduct from "./EditProduct"
 import AddProduct from "./AddProduct"
 import DeleteProduct from "./DeleteProduct"
@@ -88,7 +88,12 @@ export default function ManageProducts() {
             )}
           >
             <div className="text-start">
-              <h3>{item.product_name}</h3>
+              <div className="flex items-center gap-2">
+                <h3>{item.product_name}</h3>
+                <p className="flex items-baseline gap-2 font-bold">
+                  <span className="w-12 h-[1px] bg-gray-300 block" /> {item.quantity}
+                </p>
+              </div>
               <span className="font-normal">{formatCurrency(item.amount)}</span>
             </div>
 
