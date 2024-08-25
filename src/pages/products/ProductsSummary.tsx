@@ -1,11 +1,11 @@
 import { formatCurrency, surrealDbId } from "@/lib/utils"
-import { usePayment, useVisit } from "@/queries"
+import { usePayment, useProduct, useVisit } from "@/queries"
 import { Button } from "@/components/ui/shadcn/button"
 import { FormEvent, useState } from "react"
 import { Label } from "@/components/ui/shadcn/label"
 import { Notification, TextField } from "@/components"
-import { Product } from "@/types/prodcut"
-import { NewPayment } from "@/types/payment"
+import { Product } from "@/types/product"
+import { NewPayment, PaymentBaseType } from "@/types/payment"
 import {
   Select,
   SelectContent,
@@ -16,10 +16,12 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/shadcn/select"
+import { FaMinus } from "react-icons/fa6"
 
 type ProductsSummaryProps = {
   addedProducts: Product[]
   setAddedProducts: React.Dispatch<React.SetStateAction<Product[]>>
+  setFilteredProducts: React.Dispatch<React.SetStateAction<Product[]>>
 }
 
 type FormData = {
@@ -38,10 +40,12 @@ const INITIAL_DATA: FormData = {
 
 export default function ProductsSummary({
   addedProducts,
-  setAddedProducts
+  setAddedProducts,
+  setFilteredProducts
 }: ProductsSummaryProps) {
   const { getVisits } = useVisit()
-  const { createProductPayments } = usePayment()
+  const { createProductPayments, createItemsPayment } = usePayment()
+  const { updateProduct } = useProduct()
   const [formData, setFormData] = useState(INITIAL_DATA)
 
   const groupedProducts = addedProducts.reduce(
@@ -68,7 +72,7 @@ export default function ProductsSummary({
     }
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
     const data: NewPayment = {
@@ -89,13 +93,65 @@ export default function ProductsSummary({
       payment_method: formData.payment_method
     }
 
+    const itemsData = addedProducts.map((item) => ({
+      name: item.product_name,
+      amount: item.amount
+    }))
+
     createProductPayments.mutate(data, {
-      onSuccess: () => {
-        setAddedProducts([])
+      onSuccess: (data) => {
+        createItemsPayment.mutate({
+          paymentId: surrealDbId((data as PaymentBaseType).id),
+          visitId: formData.name === "buyer" ? "visit:buyer" : formData.name,
+          items: itemsData
+        })
       }
     })
+
+    try {
+      await Promise.all(
+        Object.values(groupedProducts).map(({ product, count }) => {
+          updateProduct.mutate(
+            {
+              id: surrealDbId(product.id),
+              product_name: product.product_name,
+              amount: product.amount,
+              quantity: parseInt(product.quantity.toString()) - count
+            },
+            {
+              onError(error) {
+                console.log(error)
+              }
+            }
+          )
+        })
+      )
+    } catch (error) {
+      console.log(error)
+    }
+
+    setAddedProducts([])
   }
-  // createProductPayments
+
+  const removeProduct = (product: Product) => {
+    setAddedProducts((prevProducts) => {
+      const index = prevProducts.findIndex(
+        (item) => surrealDbId(item.id) === surrealDbId(product.id)
+      )
+      if (index > -1) {
+        setFilteredProducts((prev) =>
+          prev.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1, status: item.quantity + 1 > 0 }
+              : item
+          )
+        )
+        return [...prevProducts.slice(0, index), ...prevProducts.slice(index + 1)]
+      }
+      return prevProducts
+    })
+  }
+
   return (
     <div className="basis-2/3">
       <h2>المحاسبة</h2>
@@ -163,6 +219,7 @@ export default function ProductsSummary({
             <th className="py-4 text-start">السعر</th>
             <th className="py-4 text-start">الكمية</th>
             <th className="py-4 text-start">الإجمالي</th>
+            <th className="py-4 text-start"></th>
           </tr>
         </thead>
         <tbody>
@@ -172,6 +229,17 @@ export default function ProductsSummary({
               <td className="py-4">{formatCurrency(product.amount)}</td>
               <td className="py-4">{count}</td>
               <td className="py-4">{formatCurrency(product.amount * count)}</td>
+              <td className="py-4">
+                <Button
+                  onClick={() => removeProduct(product)}
+                  size={"icon"}
+                  variant={"destructive"}
+                  className="w-6 h-6 rounded-sm"
+                  aria-label="remove-item"
+                >
+                  <FaMinus />
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -212,6 +280,7 @@ export default function ProductsSummary({
                     ).newTotalValue
                   )}
             </th>
+            <th className="py-4 text-start"></th>
           </tr>
           {formData.payment_method === "كاش" && (
             <tr className="w-full">

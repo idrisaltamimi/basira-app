@@ -1,9 +1,16 @@
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
+use surrealdb::sql::Thing;
 use surrealdb::Response;
 
 use crate::connect::database;
 use crate::structs::visit::UpdateVisitData;
 use crate::structs::visit_image::VisitImage;
+
+#[derive(Debug, Deserialize, Serialize)]
+struct PaymentId {
+    id: Thing,
+}
 
 #[tokio::main]
 pub async fn update_visit_query(data: UpdateVisitData) -> Result<()> {
@@ -70,9 +77,55 @@ pub async fn update_visit_query(data: UpdateVisitData) -> Result<()> {
         data.treatment_cost,
         data.prescription_cost,
         data.doctor,
-        data.visit_id
+        String::from(&data.visit_id)
     );
     let _response: Response = db.query(sql).await?;
+
+    // get payment id related to this visit
+    let payment_id_sql = format!(
+        "SELECT id FROM payment WHERE visit = '{}'",
+        String::from(&data.visit_id)
+    );
+    let mut payment_id_response = db.query(payment_id_sql).await?;
+    let payment_id: Option<PaymentId> = payment_id_response.take(0)?;
+
+    if let Some(payment_id) = payment_id {
+        let existing_payment_item_sql = format!(
+            "SELECT id FROM payment_item WHERE visit = '{}' AND name = '{}'",
+            String::from(&data.visit_id),
+            "تكلفة العلاج".to_string(),
+        );
+        let mut response: Response = db.query(existing_payment_item_sql).await?;
+        let payment_item_id: Option<PaymentId> = response.take(0)?;
+
+        let mut payment_item_sql = format!(
+            "CREATE payment_item SET
+                name = '{}',
+                amount = {},
+                payment = payment:{},
+                visit = '{}';",
+            "تكلفة العلاج".to_string(),
+            data.treatment_cost,
+            payment_id.id.id,
+            String::from(&data.visit_id),
+        );
+
+        if let Some(payment_item_id) = payment_item_id {
+            payment_item_sql = format!(
+                "UPDATE payment_item SET
+                    name = '{}',
+                    amount = {}
+                WHERE id = payment_item:{};",
+                "تكلفة العلاج".to_string(),
+                data.treatment_cost,
+                payment_item_id.id.id,
+            );
+        }
+
+        let _payment_item_response: Response = db.query(payment_item_sql).await?;
+    } else {
+        return Err(anyhow::anyhow!("No pending payment found for the visit."));
+    }
 
     Ok(())
 }

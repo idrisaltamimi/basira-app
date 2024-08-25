@@ -1,7 +1,18 @@
 import { toast } from "@/components/ui/use-toast"
-import { NewPayment, Payment, UpdatePaymentData } from "@/types/payment"
+import { NewPayment, Payment, PaymentItem, UpdatePaymentData } from "@/types/payment"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
+
+type CreatePaymentItemData = {
+  name: string
+  amount: number
+}
+
+type CreatePaymentItem = {
+  items: CreatePaymentItemData[]
+  visitId: string
+  paymentId: string
+}
 
 export default function usePayment() {
   const queryClient = useQueryClient()
@@ -18,11 +29,23 @@ export default function usePayment() {
     }
   })
 
-  const getPaymentsCount = useQuery({
-    queryKey: ["get_payments_count"],
+  const getPaymentItems = useQuery({
+    queryKey: ["get_payment_items"],
     queryFn: async () => {
       try {
-        const res: { count: number } = await invoke("get_payments_count")
+        // const res: PaymentItem[] = await invoke("get_payment_items", { pending: true })
+        return []
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
+
+  const getPaymentsCount = useMutation({
+    mutationKey: ["get_payments_count"],
+    mutationFn: async (paymentId: string) => {
+      try {
+        const res = await invoke("get_payments_count", { paymentId })
 
         return res
       } catch (error) {
@@ -52,6 +75,34 @@ export default function usePayment() {
       })
     },
     onError: () => {
+      toast({
+        title: "حدث خطأ عند حفظ المحاسبة",
+        variant: "destructive"
+      })
+    }
+  })
+
+  const createItemsPayment = useMutation({
+    mutationFn: async ({ items, visitId, paymentId }: CreatePaymentItem) => {
+      try {
+        const res = await invoke("create_payment_item", {
+          items,
+          paymentId,
+          visitId
+        })
+        return res
+      } catch (error) {
+        console.log(error)
+        throw new Error(error as string)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["get_unpaid_payments", "get_paid_payments"]
+      })
+    },
+    onError: (error) => {
+      console.error(error)
       toast({
         title: "حدث خطأ عند حفظ المحاسبة",
         variant: "destructive"
@@ -116,6 +167,8 @@ export default function usePayment() {
     updatePayment,
     deletePayment,
     createProductPayments,
-    getPaymentsCount
+    getPaymentsCount,
+    createItemsPayment,
+    getPaymentItems
   }
 }

@@ -104,6 +104,7 @@ export default function useVisitor() {
           visitorId
         })
       } catch (error) {
+        console.log(error)
         throw new Error(error as string)
       }
     },

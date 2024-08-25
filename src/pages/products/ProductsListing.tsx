@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react"
-import { FaMinus, FaPlus } from "react-icons/fa6"
+import { FaPlus } from "react-icons/fa6"
 
 import { cn, formatCurrency, surrealDbId } from "@/lib/utils"
 import { Button } from "@/components/ui/shadcn/button"
 import { Input } from "@/components/ui/shadcn/input"
-import { Product } from "@/types/prodcut"
 import { useProduct } from "@/queries"
+import { Product } from "@/types/product"
 
 type ProductsListingProps = {
   setAddedProducts: React.Dispatch<React.SetStateAction<Product[]>>
-  addedProducts: Product[]
+  filteredProducts: Product[]
+  setFilteredProducts: React.Dispatch<React.SetStateAction<Product[]>>
 }
 
 export default function ProductsListing({
   setAddedProducts,
-  addedProducts
+  setFilteredProducts,
+  filteredProducts
 }: ProductsListingProps) {
   const {
     getProducts: { data: products }
   } = useProduct()
 
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  // const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [search, setSearch] = useState("")
   const [selected, setSelected] = useState("all")
 
@@ -44,18 +46,13 @@ export default function ProductsListing({
 
   const addProduct = (product: Product) => {
     setAddedProducts((prev) => [...prev, product])
-  }
-
-  const removeProduct = (productId: string) => {
-    setAddedProducts((prevProducts) => {
-      const index = prevProducts.findIndex(
-        (product) => surrealDbId(product.id) === productId
+    setFilteredProducts((prev) =>
+      prev.map((item) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity - 1, status: item.quantity - 1 > 0 }
+          : item
       )
-      if (index > -1) {
-        return [...prevProducts.slice(0, index), ...prevProducts.slice(index + 1)]
-      }
-      return prevProducts
-    })
+    )
   }
 
   return (
@@ -108,7 +105,12 @@ export default function ProductsListing({
             )}
           >
             <div className="text-start">
-              <h3>{item.product_name}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="whitespace-nowrap">{item.product_name}</h3>
+                <p className="flex items-baseline gap-2 font-bold">
+                  <span className="w-10 h-[1px] bg-gray-300 block" /> {item.quantity}
+                </p>
+              </div>
               <span className="font-normal">{formatCurrency(item.amount)}</span>
             </div>
 
@@ -122,16 +124,6 @@ export default function ProductsListing({
                 aria-label="add-item"
               >
                 <FaPlus />
-              </Button>
-              <Button
-                onClick={() => removeProduct(surrealDbId(item.id))}
-                size={"icon"}
-                variant={"secondary"}
-                disabled={!item.status || !addedProducts.find((p) => p.id === item.id)}
-                className="w-6 h-6 rounded-sm"
-                aria-label="remove-item"
-              >
-                <FaMinus />
               </Button>
             </div>
           </div>

@@ -3,11 +3,11 @@ use surrealdb::sql::Thing;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Product {
-    id: Thing,
-    product_name: String,
-    amount: f64,
-    status: bool,
-    quantity: u32,
+    pub id: Thing,
+    pub product_name: String,
+    pub amount: f64,
+    pub status: bool,
+    pub quantity: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -17,7 +17,7 @@ pub struct CreateProduct {
     pub quantity: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UpdateProduct {
     pub id: String,
     pub product_name: String,

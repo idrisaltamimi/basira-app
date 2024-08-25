@@ -27,10 +27,12 @@ fn main() {
             visit::delete_visit_query::delete_visit,
             // Payment Queries
             payment::create_payment_query::create_payment,
+            payment::create_payment_item_query::create_payment_item,
             payment::create_products_payment::create_products_payments,
             payment::update_payment_query::update_payment,
             payment::delete_payment_query::delete_payment,
             payment::get_payments_query::get_payments,
+            payment::get_payment_items_query::get_payment_items,
             payment::get_payments_count_query::get_payments_count,
             // Statics Queries
             statics::last_month_visits_count_query::last_month_visits_count,
@@ -59,6 +61,7 @@ fn main() {
             product::create_product_query::create_product,
             product::update_product_query::update_product,
             product::delete_product_query::delete_product,
+            product::update_products_quantity_query::update_products_quantity,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -8,7 +8,7 @@ import { decompressFromUTF16 } from "lz-string"
 import { TextField } from "@/components/form/Textfield"
 import { Textarea } from "@/components/ui/shadcn/textarea"
 import { Button } from "@/components/ui/shadcn/button"
-import { usePayment, useUser, useVisit } from "@/queries"
+import { useUser, useVisit } from "@/queries"
 import { surrealDbId } from "@/lib/utils"
 import { Visit } from "@/types/visit"
 import useCanvas from "@/hooks/useCanvas"
@@ -35,7 +35,6 @@ const INITIAL_FORM_DATA: {
 export default function VisitForm({ visit }: { visit: Visit | undefined }) {
   const { userData } = useUser()
   const { updateVisit } = useVisit()
-  const { createNewPayment } = usePayment()
 
   const { undo, clear, image, selectColor, color, canvasRef } = useCanvas()
   const [formData, setFormData] = useState(INITIAL_FORM_DATA)
@@ -61,7 +60,7 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const visitData = {
+    updateVisit.mutate({
       treatment_img: image(),
       description: formData.description ?? "",
       treatment_type: formData.treatment_type ?? "",
@@ -71,20 +70,6 @@ export default function VisitForm({ visit }: { visit: Visit | undefined }) {
       prescription_cost: parseFloat("0"),
       doctor: surrealDbId(userData?.id),
       visit_id: surrealDbId(visit?.id)
-    }
-
-    updateVisit.mutate(visitData, {
-      onSuccess: async () => {
-        await createNewPayment.mutate({
-          payment_type: "payment",
-          payment_method: "فيزا",
-          name: "treatment_cost",
-          category: "visits",
-          amount: parseFloat(formData?.treatment_cost ?? ""),
-          visit_id: surrealDbId(visit?.id),
-          pending: true
-        })
-      }
     })
   }
 

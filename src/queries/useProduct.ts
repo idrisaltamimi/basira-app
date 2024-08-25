@@ -1,11 +1,11 @@
-import { Product } from "@/types/prodcut"
+import { Product } from "@/types/product"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 
 type CreateProduct = {
   product_name: string
   amount: number
-  status: boolean
+  quantity: number
 }
 
 interface UpdateProduct extends CreateProduct {
