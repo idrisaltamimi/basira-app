@@ -34,6 +34,7 @@ fn main() {
             payment::get_payments_query::get_payments,
             payment::get_payment_items_query::get_payment_items,
             payment::get_payments_count_query::get_payments_count,
+            payment::delete_payment_item_query::delete_payment_item,
             // Statics Queries
             statics::last_month_visits_count_query::last_month_visits_count,
             statics::latest_visit_query::latest_visit,

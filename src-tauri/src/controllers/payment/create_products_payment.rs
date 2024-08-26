@@ -22,12 +22,12 @@ pub async fn create_payments_query(data: CreatePaymentData) -> Result<Option<Ori
     // Create a new payment if no existing payment is found
     let create_sql = format!(
         "CREATE payment SET 
-            payment_type = ?payment_type, 
-            name = ?name, 
-            category = ?category, 
-            amount = ?amount, 
-            payment_method = ?payment_method, 
-            pending = ?pending, 
+            payment_type = $payment_type, 
+            name = $name, 
+            category = $category, 
+            amount = $amount, 
+            payment_method = $payment_method, 
+            pending = $pending, 
             created_at = time::now(),
             visit = {};",
         &data.visit_id

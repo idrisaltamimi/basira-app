@@ -8,27 +8,27 @@ import {
 import { usePayment } from "@/queries"
 import { formatCurrency, surrealDbId } from "@/lib/utils"
 import { SurrealDbId } from "@/lib/types"
-import DeletePayment from "@/components/helpers/DeletePayment"
 import PaymentsActions from "./PaymentsActions"
 import { FaX } from "react-icons/fa6"
+import DeleteItemPayment from "@/components/helpers/DeletePaymentItem"
 
 export default function PendingPayments() {
-  const { getUnpaidPayments } = usePayment()
-
-  const payments = getUnpaidPayments.data ?? []
+  const {
+    getUnpaidPayments: { data }
+  } = usePayment()
 
   return (
     <div>
       <h1>الحسابات</h1>
       <hr />
-      {payments.length > 0 && getUnpaidPayments.data ? (
+      {data && data.length > 0 ? (
         <Accordion
           type="single"
           collapsible
           className="max-w-[800px] border rounded-3xl p-6 mx-auto shadow-sm"
         >
-          {getUnpaidPayments.data.map(
-            ({ visit_id, visitor_phone, visitor_name, payment_items, amount }) => (
+          {data.map(
+            ({ visit_id, visitor_phone, visitor_name, payment_items, amount, id }) => (
               <AccordionItem
                 value={surrealDbId(visit_id as SurrealDbId)}
                 key={surrealDbId(visit_id as SurrealDbId)}
@@ -55,9 +55,9 @@ export default function PendingPayments() {
                           </td>
                           <td className="py-2">{formatCurrency(item.amount)}</td>
                           <td className="py-2">
-                            <DeletePayment paymentId={item.id}>
+                            <DeleteItemPayment paymentId={id} paymentItemId={item.id}>
                               <FaX />
-                            </DeletePayment>
+                            </DeleteItemPayment>
                           </td>
                         </tr>
                       ))}

@@ -77,7 +77,7 @@ export default function ProductsSummary({
 
     const data: NewPayment = {
       payment_type: "payment",
-      name: "شراء منتجات",
+      name: "مشتري",
       category: "products",
       pending: formData.name === "buyer" ? false : true,
       visit_id: formData.name === "buyer" ? "visit:buyer" : formData.name,

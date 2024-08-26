@@ -39,9 +39,9 @@ pub struct OriginalPayment {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PaymentItem {
     id: Thing,
-    name: String,
+    pub name: String,
     amount: f64,
-    visit: Thing,
+    pub visit: Thing,
     payment: Thing,
 }
 

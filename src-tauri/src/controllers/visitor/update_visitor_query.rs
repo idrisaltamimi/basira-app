@@ -16,7 +16,6 @@ pub async fn update_visitor_query(data: UpdateVisitorData) -> Result<()> {
         );
         let mut check_civil_id_res: Response = db.query(check_civil_id_query).await?;
         let existing_visitors: Vec<Visitor> = check_civil_id_res.take(0)?;
-        println!("{:#?}", existing_visitors);
         if !existing_visitors.is_empty() {
             return Err(anyhow!("visitor with the civil_id already exists"));
         }

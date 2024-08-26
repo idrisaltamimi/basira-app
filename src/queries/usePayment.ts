@@ -152,15 +152,59 @@ export default function usePayment() {
         return res
       } catch (error) {
         console.error(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["get_unpaid_payments"]
       })
+      toast({
+        title: "تم حذف المحاسبة"
+      })
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ عند حذف المحاسبة",
+        variant: "destructive"
+      })
     }
   })
 
+  const deletePaymentItem = useMutation({
+    mutationFn: async ({
+      paymentId,
+      paymentItemId
+    }: {
+      paymentId: string
+      paymentItemId: string
+    }) => {
+      try {
+        const res = await invoke("delete_payment_item", { paymentId, paymentItemId })
+        return res
+      } catch (error) {
+        console.error(error)
+        throw new Error(error as string)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["get_unpaid_payments", "get_product"]
+      })
+      queryClient.refetchQueries({ queryKey: ["get_unpaid_payments"] })
+      toast({
+        title: "تم حذف المحاسبة"
+      })
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ عند حذف المحاسبة",
+        variant: "destructive"
+      })
+    }
+  })
+
+  // paymentItemId
   return {
     createNewPayment,
     getUnpaidPayments,
@@ -169,6 +213,7 @@ export default function usePayment() {
     createProductPayments,
     getPaymentsCount,
     createItemsPayment,
-    getPaymentItems
+    getPaymentItems,
+    deletePaymentItem
   }
 }
