@@ -9,7 +9,7 @@ import {
 } from "./shadcn/dialog"
 import { DialogProps } from "@radix-ui/react-dialog"
 
-type ModalProps = {
+export type ModalProps = {
   title?: String
   children: ReactElement
   redTitle?: boolean

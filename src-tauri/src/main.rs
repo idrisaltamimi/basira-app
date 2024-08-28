@@ -22,9 +22,11 @@ fn main() {
             visit::get_visit_query::get_visit,
             visit::update_visit_query::update_visit,
             visit::get_visits_history_query::get_visits_history,
+            visit::get_today_visits_query::get_today_visits,
             visit::get_selected_visit_query::get_selected_visit,
             visit::close_visit_query::close_visit,
             visit::delete_visit_query::delete_visit,
+            visit::delete_visit_by_id_query::delete_visit_by_id,
             // Payment Queries
             payment::create_payment_query::create_payment,
             payment::create_payment_item_query::create_payment_item,

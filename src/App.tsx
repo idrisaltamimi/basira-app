@@ -12,6 +12,7 @@ const PendingPayments = lazy(() => import("./pages/pending-payments"))
 const Dashboard = lazy(() => import("./pages/dashboard"))
 const Home = lazy(() => import("./pages/home"))
 const Statics = lazy(() => import("./pages/home/pages/statics"))
+const Visits = lazy(() => import("./pages/home/pages/visits"))
 const Payments = lazy(() => import("./pages/home/pages/payments"))
 const VisitorFile = lazy(() => import("./pages/visitor-file"))
 const Settings = lazy(() => import("./pages/settings"))
@@ -41,6 +42,10 @@ export default function App() {
               <Route
                 path="statics"
                 element={<ProtectedRoute roles={["مدير"]} Component={Statics} />}
+              />
+              <Route
+                path="visits"
+                element={<ProtectedRoute roles={["مدير"]} Component={Visits} />}
               />
               <Route
                 path="payments"

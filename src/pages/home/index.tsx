@@ -29,6 +29,9 @@ export default function Home() {
         <NavLink active={active("statics")} to="statics">
           الاحصائيات
         </NavLink>
+        <NavLink active={active("visits")} to="visits">
+          الزيارات
+        </NavLink>
         <NavLink active={active("payments")} to="payments">
           المحاسبات
         </NavLink>

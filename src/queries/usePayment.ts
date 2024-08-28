@@ -1,5 +1,5 @@
 import { toast } from "@/components/ui/use-toast"
-import { NewPayment, Payment, PaymentItem, UpdatePaymentData } from "@/types/payment"
+import { NewPayment, Payment, UpdatePaymentData } from "@/types/payment"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
 
@@ -45,7 +45,7 @@ export default function usePayment() {
     mutationKey: ["get_payments_count"],
     mutationFn: async (paymentId: string) => {
       try {
-        const res = await invoke("get_payments_count", { paymentId })
+        const res: { count: number } = await invoke("get_payments_count", { paymentId })
 
         return res
       } catch (error) {

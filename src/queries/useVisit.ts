@@ -102,6 +102,30 @@ export default function useVisit() {
     }
   })
 
+  const deleteVisitById = useMutation({
+    mutationFn: async (visitId: string) => {
+      try {
+        const res = await invoke("delete_visit_by_id", { visitId })
+        return res
+      } catch (error) {
+        throw new Error(error as string)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get_visits", "get_today_visits"] })
+      toast({
+        title: "تم إلغاء الزيارة بنجاح"
+      })
+    },
+    onError: (error) => {
+      toast({
+        title: "حدث خطأ ما",
+        description: error.message,
+        variant: "destructive"
+      })
+    }
+  })
+
   const updateVisit = useMutation({
     mutationFn: async (data: updateVisit) => {
       try {
@@ -159,6 +183,7 @@ export default function useVisit() {
     closeOpenVisit,
     updateVisit,
     getVisitsHistory,
-    deleteVisit
+    deleteVisit,
+    deleteVisitById
   }
 }
