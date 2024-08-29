@@ -9,6 +9,8 @@ pub async fn delete_visit_by_id_query(visit_id: String) -> Result<()> {
 
     let sql = format!("DELETE visit WHERE id = '{}'", visit_id);
     let _response: Response = db.query(sql).await?;
+    let sql = format!("DELETE image WHERE visit = '{}'", visit_id);
+    let _response: Response = db.query(sql).await?;
 
     Ok(())
 }

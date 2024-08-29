@@ -21,6 +21,8 @@ pub async fn delete_visit_query(visit_id: String) -> Result<()> {
         } else {
             let sql = format!("DELETE visit WHERE id = '{}'", visit_id);
             let _response: Response = db.query(sql).await?;
+            let sql = format!("DELETE image WHERE visit = '{}'", visit_id);
+            let _response: Response = db.query(sql).await?;
         }
     } else {
         return Err(anyhow!("حدث خطأ ما حاول مرة أخرى"));

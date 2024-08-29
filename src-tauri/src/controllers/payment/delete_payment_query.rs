@@ -8,7 +8,8 @@ pub async fn delete_payment_query(payment_id: String) -> Result<()> {
     let db = database().await?;
 
     let sql = format!("DELETE payment WHERE id = {}", payment_id);
-
+    let _response: Response = db.query(sql).await?;
+    let sql = format!("DELETE payment_item WHERE payment = {}", payment_id);
     let _response: Response = db.query(sql).await?;
 
     Ok(())
