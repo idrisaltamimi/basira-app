@@ -76,19 +76,23 @@ pub async fn get_payments_query(
         let mut payment_items_response: Response = db.query(&payment_items_sql).await?;
         let payment_items: Vec<Item> = payment_items_response.take(0)?;
 
-        // Calculate the total amount from payment_items
-        let total_amount: f64 = payment_items.iter().map(|item| item.amount).sum();
+        // Only calculate the total amount and update payment if payment_items is not empty
+        if !payment_items.is_empty() {
+            let total_amount: f64 = payment_items.iter().map(|item| item.amount).sum();
 
-        // Update the payment's amount field
-        payment.amount = total_amount;
-        payment.payment_items = Some(payment_items);
+            // Update the payment's amount field
+            payment.amount = total_amount;
+            payment.payment_items = Some(payment_items);
 
-        // Update the payment record in the database with the new total amount
-        let update_payment_sql = format!(
-            "UPDATE payment SET amount = {} WHERE id = payment:{};",
-            total_amount, payment.id.id
-        );
-        db.query(&update_payment_sql).await?;
+            // Update the payment record in the database with the new total amount
+            let update_payment_sql = format!(
+                "UPDATE payment SET amount = {} WHERE id = payment:{};",
+                total_amount, payment.id.id
+            );
+            db.query(&update_payment_sql).await?;
+        } else {
+            payment.payment_items = Some(payment_items); // Still attach the empty items array
+        }
     }
 
     Ok(payments)
