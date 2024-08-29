@@ -18,6 +18,8 @@ export default function Home() {
         return "الاحصائيات"
       case "payments":
         return "حسابات الزائرين"
+      case "visits":
+        return "الزائرين"
       default:
         return ""
     }

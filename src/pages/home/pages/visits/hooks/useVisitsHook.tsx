@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query"
 import { toast } from "@/components/ui/use-toast"
 import { useVisit } from "@/queries"
 import { ChangeEvent, useEffect, useState } from "react"
+import { MAX_VISIBLE_PAGES, PAGE_SIZE } from "@/constants"
 
 export type VisitDetails = {
   id: SurrealDbId
@@ -26,16 +27,36 @@ export type VisitDetails = {
 }
 
 export function useVisitsHook() {
-  const [filter, setFilter] = useState({ time: "today", gender: "all" })
+  const [filter, setFilter] = useState({ time: "all", gender: "all" })
   const [filteredData, setFilteredData] = useState<VisitDetails[]>()
-
   const { deleteVisitById } = useVisit()
-  const { data, isLoading, isFetching, isError, error } = useQuery({
-    queryKey: ["get_today_visits", filter.time],
+  const [pageIndex, setPageIndex] = useState(0)
+
+  const { data: count } = useQuery({
+    queryKey: ["get_payments_count"],
     queryFn: async () => {
       try {
-        const res: VisitDetails[] = await invoke("get_today_visits", {
-          filter: filter.time
+        const res: { count: number } = await invoke("get_visits_count")
+
+        return res
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  })
+
+  const totalNumberOfPages = Math.ceil((count?.count ?? 0) / PAGE_SIZE)
+  const currentPage = pageIndex + 1
+
+  const { data, isLoading, isFetching, isError, error } = useQuery({
+    queryKey: ["get_filtered_visits", filter, pageIndex],
+    queryFn: async () => {
+      try {
+        const res: VisitDetails[] = await invoke("get_filtered_visits", {
+          time: filter.time,
+          gender: filter.gender,
+          pageIndex,
+          pageSize: PAGE_SIZE
         })
         return res
       } catch (error) {
@@ -75,6 +96,11 @@ export function useVisitsHook() {
       cell: ({ row }) => <div>{calculateAge(row.getValue("visitor_birthdate"))}</div>
     },
     {
+      accessorKey: "visitor_gender",
+      header: "الجنس",
+      cell: ({ row }) => <div>{row.getValue("visitor_gender")}</div>
+    },
+    {
       accessorKey: "doctor_name",
       header: "المعالج",
       cell: ({ row }) => <div>{row.getValue("doctor_name")}</div>
@@ -95,9 +121,9 @@ export function useVisitsHook() {
       cell: ({ row }) => (
         <div className="font-bold text-destructive">
           {row.getValue("is_open") ? (
-            <span className="text-success">مفتوحة</span>
+            <span>مفتوحة</span>
           ) : (
-            <span>مغلقة</span>
+            <span className="text-success">مغلقة</span>
           )}
         </div>
       )
@@ -137,15 +163,59 @@ export function useVisitsHook() {
     getCoreRowModel: getCoreRowModel()
   })
 
+  const handleNext = () => {
+    setPageIndex((old) => old + 1)
+    window.scrollTo({ top: 0 })
+  }
+
+  const handlePrevious = () => {
+    setPageIndex((old) => Math.max(old - 1, 0))
+    window.scrollTo({ top: 0 })
+  }
+
+  const handlePage = (page: number) => {
+    setPageIndex(page - 1)
+    window.scrollTo({ top: 0 })
+  }
+
+  const { startPage, endPage } = paginationSetup(currentPage, totalNumberOfPages)
+
   return {
+    handlePage,
+    handlePrevious,
+    handleNext,
+    startPage,
+    endPage,
     table,
     isLoading,
     isFetching,
     isError,
     error,
+    totalNumberOfPages,
     columns,
+    pageIndex,
+    setFilter,
+    filter,
     data: filteredData ?? [],
-    handleChange,
-    filter
+    handleChange
+  }
+}
+
+const paginationSetup = (currentPage: number, totalNumberOfPages: number) => {
+  // Calculate the range of pages to show
+  let startPage = Math.max(currentPage - Math.floor(MAX_VISIBLE_PAGES / 2), 1)
+  let endPage = Math.min(startPage + MAX_VISIBLE_PAGES - 1, totalNumberOfPages)
+
+  // Adjust start and end page if near the beginning or end of range
+  const rangeAdjustment = MAX_VISIBLE_PAGES - (endPage - startPage + 1)
+  if (startPage === 1) {
+    endPage = Math.min(endPage + rangeAdjustment, totalNumberOfPages)
+  } else if (endPage === totalNumberOfPages) {
+    startPage = Math.max(startPage - rangeAdjustment, 1)
+  }
+
+  return {
+    startPage,
+    endPage
   }
 }

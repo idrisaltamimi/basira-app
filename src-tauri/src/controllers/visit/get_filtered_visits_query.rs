@@ -22,14 +22,29 @@ pub struct VisitDetails {
 }
 
 #[tokio::main]
-pub async fn get_today_visits_query(filter: String) -> Result<Vec<VisitDetails>> {
+pub async fn get_filtered_visits_query(
+    time: String,
+    gender: String,
+    page_index: u32,
+    page_size: u32,
+) -> Result<Vec<VisitDetails>> {
     let db = database().await?;
 
-    let time_condition = match filter.as_str() {
+    let time_condition = match time.as_str() {
         "today" => "time::day(created_at) == time::day(time::now())".to_string(),
         "yesterday" => "time::day(created_at) == time::day(time::now() - 1d)".to_string(),
+        "all" => "true".to_string(),
         _ => return Err(anyhow::anyhow!("Invalid filter")),
     };
+
+    let gender_condition = match gender.as_str() {
+        "ذكر" => "visitor.gender == 'ذكر'".to_string(),
+        "أنثى" => "visitor.gender == 'أنثى'".to_string(),
+        "all" => "true".to_string(),
+        _ => return Err(anyhow::anyhow!("Invalid filter")),
+    };
+
+    let start_record = page_index * page_size;
 
     let sql = format!(
         "SELECT 
@@ -45,8 +60,8 @@ pub async fn get_today_visits_query(filter: String) -> Result<Vec<VisitDetails>>
             doctor.name as doctor_name,
             treatment_type,
             is_open
-        FROM visit WHERE {};",
-        time_condition
+        FROM visit WHERE {} AND {} ORDER BY created_at DESC LIMIT {} START {};",
+        time_condition, gender_condition, page_size, start_record
     );
 
     let mut response: Response = db.query(sql).await?;
@@ -56,8 +71,13 @@ pub async fn get_today_visits_query(filter: String) -> Result<Vec<VisitDetails>>
 }
 
 #[tauri::command]
-pub fn get_today_visits(filter: String) -> Result<Vec<VisitDetails>, String> {
-    match get_today_visits_query(filter) {
+pub fn get_filtered_visits(
+    time: String,
+    gender: String,
+    page_index: u32,
+    page_size: u32,
+) -> Result<Vec<VisitDetails>, String> {
+    match get_filtered_visits_query(time, gender, page_index, page_size) {
         Ok(visits) => Ok(visits),
         Err(err) => Err(err.to_string()), // Convert Error to String
     }

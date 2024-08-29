@@ -43,9 +43,9 @@ export default function usePayment() {
 
   const getPaymentsCount = useMutation({
     mutationKey: ["get_payments_count"],
-    mutationFn: async (paymentId: string) => {
+    mutationFn: async () => {
       try {
-        const res: { count: number } = await invoke("get_payments_count", { paymentId })
+        const res: { count: number } = await invoke("get_payments_count")
 
         return res
       } catch (error) {
