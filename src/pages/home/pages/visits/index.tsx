@@ -24,8 +24,6 @@ export default function Visits() {
     handleChange
   } = useVisitsHook()
 
-  console.log(data)
-
   return (
     <div className="w-full">
       <div className="flex items-center gap-4 mt-4 mb-2">
