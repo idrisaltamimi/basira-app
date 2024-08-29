@@ -40,8 +40,7 @@ export default function Payments() {
     pageIndex,
     setFilter,
     filter,
-    data,
-    setRefetch
+    data
   } = usePaymentsHook()
 
   const handleChange = (e: ChangeEvent) => {
@@ -52,7 +51,7 @@ export default function Payments() {
   return (
     <div className="w-full">
       <div className="mt-2">
-        <AddSpending setRefetch={setRefetch} />
+        <AddSpending />
         <div className="flex items-center gap-4 mt-4 mb-2">
           <RadioInput
             label="الكل"
@@ -151,7 +150,7 @@ export default function Payments() {
                 </TableCell>
               </TableRow>
             )}
-            {data.length === 0 && (
+            {data?.length === 0 && (
               <TableRow className="py-6 text-2xl font-semibold text-center text-muted-foreground">
                 <TableCell>لا توجد محاسبات</TableCell>
               </TableRow>

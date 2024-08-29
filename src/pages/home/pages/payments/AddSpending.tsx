@@ -20,11 +20,7 @@ const INITIAL_DATA: {
   name: ""
 }
 
-export default function AddSpending({
-  setRefetch
-}: {
-  setRefetch: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+export default function AddSpending() {
   const queryClient = useQueryClient()
   const { createNewPayment } = usePayment()
   const { userData } = useUser()
@@ -54,11 +50,13 @@ export default function AddSpending({
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["get_paid_payments"] })
+          queryClient.refetchQueries({
+            queryKey: ["get_payments"]
+          })
           toast({
             title: "تم إضافة المصاريف بنجاح"
           })
-          setRefetch(true)
+          setFormData(INITIAL_DATA)
           setIsOpen(false)
         }
       }

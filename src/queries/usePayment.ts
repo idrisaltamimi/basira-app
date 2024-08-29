@@ -71,7 +71,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_paid_payments"]
+        queryKey: ["get_unpaid_payments", "get_paid_payments", "get_payments"]
       })
     },
     onError: () => {
