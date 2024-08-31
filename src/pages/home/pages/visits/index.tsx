@@ -70,6 +70,24 @@ export default function Visits() {
           onChange={handleChange}
           small
         />
+        <RadioInput
+          label="الشهر الحالي"
+          id="month"
+          name="time"
+          value="month"
+          checked={filter.time === "month"}
+          onChange={handleChange}
+          small
+        />
+        <RadioInput
+          label="الشهر الماضي"
+          id="last_month"
+          name="time"
+          value="last_month"
+          checked={filter.time === "last_month"}
+          onChange={handleChange}
+          small
+        />
       </div>
       <div className="flex items-center gap-4 mt-4 mb-2">
         <RadioInput
