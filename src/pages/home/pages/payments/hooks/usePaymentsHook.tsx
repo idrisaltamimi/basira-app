@@ -8,28 +8,31 @@ import { MAX_VISIBLE_PAGES, PAGE_SIZE } from "@/constants"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "@/components/ui/use-toast"
 
+type Filters = {
+  category: "all" | "products" | "salaries" | "visits" | "expenses"
+  time: string
+}
+
 export function usePaymentsHook() {
   const {
     getPaymentsCount: { data: count }
   } = usePayment()
 
   const [pageIndex, setPageIndex] = useState(0)
-  const [filter, setFilter] = useState<
-    "all" | "products" | "salaries" | "visits" | "expenses"
-  >("all")
+  const [filter, setFilter] = useState<Filters>({ category: "all", time: "all" })
 
   const totalNumberOfPages = Math.ceil((count?.count ?? 0) / PAGE_SIZE)
   const currentPage = pageIndex + 1
 
   const { data, isLoading, isError, isFetching, error } = useQuery({
-    queryKey: ["get_payments", pageIndex, filter],
+    queryKey: ["get_filtered_payments", pageIndex, filter],
     queryFn: async () => {
       try {
-        const res: Payment[] = await invoke("get_payments", {
-          pending: false,
+        const res: Payment[] = await invoke("get_filtered_payments", {
+          category: filter.category,
+          time: filter.time,
           pageIndex,
-          pageSize: PAGE_SIZE,
-          category: filter === "all" ? null : filter
+          pageSize: PAGE_SIZE
         })
         return res
       } catch (error) {

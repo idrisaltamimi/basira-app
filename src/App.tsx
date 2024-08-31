@@ -14,6 +14,7 @@ const Home = lazy(() => import("./pages/home"))
 const Statics = lazy(() => import("./pages/home/pages/statics"))
 const Visits = lazy(() => import("./pages/home/pages/visits"))
 const Payments = lazy(() => import("./pages/home/pages/payments"))
+const Downloads = lazy(() => import("./pages/home/pages/downloads"))
 const VisitorFile = lazy(() => import("./pages/visitor-file"))
 const Settings = lazy(() => import("./pages/settings"))
 const Users = lazy(() => import("./pages/users"))
@@ -50,6 +51,10 @@ export default function App() {
               <Route
                 path="payments"
                 element={<ProtectedRoute roles={["مدير"]} Component={Payments} />}
+              />
+              <Route
+                path="downloads"
+                element={<ProtectedRoute roles={["مدير"]} Component={Downloads} />}
               />
             </Route>
             <Route

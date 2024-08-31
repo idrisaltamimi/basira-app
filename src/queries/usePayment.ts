@@ -71,7 +71,12 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_paid_payments", "get_payments"]
+        queryKey: [
+          "get_unpaid_payments",
+          "get_paid_payments",
+          "get_payments",
+          "get_filtered_payments_query"
+        ]
       })
     },
     onError: () => {
@@ -98,7 +103,11 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_paid_payments"]
+        queryKey: [
+          "get_unpaid_payments",
+          "get_paid_payments",
+          "get_filtered_payments_query"
+        ]
       })
     },
     onError: (error) => {
@@ -122,7 +131,9 @@ export default function usePayment() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get_unpaid_payments"] })
+      queryClient.invalidateQueries({
+        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
+      })
     }
   })
 
@@ -140,7 +151,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments"]
+        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
       })
     }
   })
@@ -157,7 +168,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments"]
+        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
       })
       toast({
         title: "تم حذف المحاسبة"
@@ -191,7 +202,9 @@ export default function usePayment() {
       queryClient.invalidateQueries({
         queryKey: ["get_unpaid_payments", "get_product"]
       })
-      queryClient.refetchQueries({ queryKey: ["get_unpaid_payments"] })
+      queryClient.refetchQueries({
+        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
+      })
       toast({
         title: "تم حذف المحاسبة"
       })
@@ -204,7 +217,6 @@ export default function usePayment() {
     }
   })
 
-  // paymentItemId
   return {
     createNewPayment,
     getUnpaidPayments,

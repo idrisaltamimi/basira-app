@@ -44,8 +44,8 @@ export default function Payments() {
   } = usePaymentsHook()
 
   const handleChange = (e: ChangeEvent) => {
-    const { value } = e.target as HTMLInputElement
-    setFilter(value as "all" | "products" | "visits" | "salaries" | "expenses")
+    const { value, name } = e.target as HTMLInputElement
+    setFilter((prev) => ({ ...prev, [name]: value }))
   }
 
   return (
@@ -55,46 +55,93 @@ export default function Payments() {
         <div className="flex items-center gap-4 mt-4 mb-2">
           <RadioInput
             label="الكل"
-            id="all"
-            name="filter"
+            id="all_data"
+            name="time"
             value="all"
-            checked={filter === "all"}
+            checked={filter.time === "all"}
+            onChange={handleChange}
+            small
+          />
+          <RadioInput
+            label="اليوم"
+            id="today"
+            name="time"
+            value="today"
+            checked={filter.time === "today"}
+            onChange={handleChange}
+            small
+          />
+          <RadioInput
+            label="الأمس"
+            id="yesterday"
+            name="time"
+            value="yesterday"
+            checked={filter.time === "yesterday"}
+            onChange={handleChange}
+            small
+          />
+          <RadioInput
+            label="الشهر الحالي"
+            id="month"
+            name="time"
+            value="month"
+            checked={filter.time === "month"}
+            onChange={handleChange}
+            small
+          />
+          <RadioInput
+            label="الشهر الماضي"
+            id="last_month"
+            name="time"
+            value="last_month"
+            checked={filter.time === "last_month"}
+            onChange={handleChange}
+            small
+          />
+        </div>
+        <div className="flex items-center gap-4 mt-4 mb-2">
+          <RadioInput
+            label="الكل"
+            id="all_categories"
+            name="category"
+            value="all"
+            checked={filter.category === "all"}
             onChange={handleChange}
             small
           />
           <RadioInput
             label="المنتجات"
             id="products"
-            name="filter"
+            name="category"
             value="products"
-            checked={filter === "products"}
+            checked={filter.category === "products"}
             onChange={handleChange}
             small
           />
           <RadioInput
             label="الرواتب"
             id="salaries"
-            name="filter"
+            name="category"
             value="salaries"
-            checked={filter === "salaries"}
+            checked={filter.category === "salaries"}
             onChange={handleChange}
             small
           />
           <RadioInput
             label="الزيارات"
             id="visits"
-            name="filter"
+            name="category"
             value="visits"
-            checked={filter === "visits"}
+            checked={filter.category === "visits"}
             onChange={handleChange}
             small
           />
           <RadioInput
             label="المصروفات"
             id="expenses"
-            name="filter"
+            name="category"
             value="expenses"
-            checked={filter === "expenses"}
+            checked={filter.category === "expenses"}
             onChange={handleChange}
             small
           />

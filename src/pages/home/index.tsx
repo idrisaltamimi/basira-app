@@ -20,6 +20,8 @@ export default function Home() {
         return "حسابات الزائرين"
       case "visits":
         return "الزائرين"
+      case "downloads":
+        return "تحميل الملفات"
       default:
         return ""
     }
@@ -36,6 +38,9 @@ export default function Home() {
         </NavLink>
         <NavLink active={active("payments")} to="payments">
           المحاسبات
+        </NavLink>
+        <NavLink active={active("downloads")} to="downloads">
+          تحميل الملفات
         </NavLink>
       </ul>
       <div className="mt-4 text-xs">
