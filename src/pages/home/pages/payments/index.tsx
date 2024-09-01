@@ -209,7 +209,9 @@ export default function Payments() {
         <div className="flex items-center gap-2 space-x-2">
           <Pagination>
             <PaginationContent>
-              <PaginationItem>
+              <PaginationItem
+                className={pageIndex === 0 ? "pointer-events-none opacity-60" : ""}
+              >
                 <PaginationPrevious href="#" onClick={handlePrevious} />
               </PaginationItem>
               {startPage > 1 && (
@@ -233,7 +235,9 @@ export default function Payments() {
                   <PaginationEllipsis />
                 </PaginationItem>
               )}
-              <PaginationItem>
+              <PaginationItem
+                className={data.length <= 0 ? "pointer-events-none opacity-60" : ""}
+              >
                 <PaginationNext href="#" onClick={handleNext} />
               </PaginationItem>
             </PaginationContent>

@@ -92,7 +92,7 @@ export function usePaymentsHook() {
     pageIndex,
     setFilter,
     filter,
-    data
+    data: data ?? []
   }
 }
 
