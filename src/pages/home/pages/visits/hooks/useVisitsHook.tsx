@@ -5,7 +5,7 @@ import DeleteForm from "@/components/form/DeleteForm"
 import { MdDeleteSweep } from "react-icons/md"
 import { invoke } from "@tauri-apps/api/tauri"
 import { SurrealDbId } from "@/lib/types"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "@/components/ui/use-toast"
 import { useVisit } from "@/queries"
 import { ChangeEvent, useEffect, useState } from "react"
@@ -33,7 +33,7 @@ export function useVisitsHook() {
   const [pageIndex, setPageIndex] = useState(0)
 
   const { data: count } = useQuery({
-    queryKey: ["get_payments_count"],
+    queryKey: ["get_visits_count"],
     queryFn: async () => {
       try {
         const res: { count: number } = await invoke("get_visits_count")
@@ -132,8 +132,16 @@ export function useVisitsHook() {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
+        const queryClient = useQueryClient()
         const visit = row.original
-        const deleteVisit = () => deleteVisitById.mutate(surrealDbId(visit.id))
+        const deleteVisit = () =>
+          deleteVisitById.mutate(surrealDbId(visit.id), {
+            onSuccess: () => {
+              queryClient.refetchQueries({
+                queryKey: ["get_visits_count", "get_filtered_visits"]
+              })
+            }
+          })
         return (
           <div className="flex justify-end w-full">
             <DeleteForm title="هل تريد حذف الزيارة" action={deleteVisit}>

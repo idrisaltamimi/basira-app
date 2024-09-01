@@ -75,7 +75,8 @@ export default function usePayment() {
           "get_unpaid_payments",
           "get_paid_payments",
           "get_payments",
-          "get_filtered_payments_query"
+          "get_filtered_payments_query",
+          "get_payments_count"
         ]
       })
     },
@@ -132,7 +133,11 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
+        queryKey: [
+          "get_unpaid_payments",
+          "get_filtered_payments_query",
+          "get_payments_count"
+        ]
       })
     }
   })
@@ -168,7 +173,11 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
+        queryKey: [
+          "get_unpaid_payments",
+          "get_filtered_payments_query",
+          "get_payments_count"
+        ]
       })
       toast({
         title: "تم حذف المحاسبة"
@@ -203,7 +212,7 @@ export default function usePayment() {
         queryKey: ["get_unpaid_payments", "get_product"]
       })
       queryClient.refetchQueries({
-        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
+        queryKey: ["get_filtered_payments_query", "get_payments_count"]
       })
       toast({
         title: "تم حذف المحاسبة"
