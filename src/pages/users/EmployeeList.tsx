@@ -59,9 +59,17 @@ const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "login_at",
-    header: "آخر تسجيل",
+    header: "تسجيل الدخول",
     cell: ({ row }) => {
       const date = row.getValue("login_at")
+      return <div>{date == null ? "______" : formatDate(date as string, "full")}</div>
+    }
+  },
+  {
+    accessorKey: "logout_at",
+    header: "تسجيل الخروج",
+    cell: ({ row }) => {
+      const date = row.getValue("logout_at")
       return <div>{date == null ? "______" : formatDate(date as string, "full")}</div>
     }
   },

@@ -39,10 +39,20 @@ export default function useAuth() {
     }
   })
 
-  const signOut = () => {
-    queryClient.setQueryData(["userData"], {})
-    navigate("/auth")
-  }
+  const signOut = useMutation({
+    mutationFn: async (userId: string) => {
+      try {
+        const res = await invoke("signout", { userId })
+        return res
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    onSuccess: async () => {
+      queryClient.setQueryData(["userData"], {})
+      navigate("/auth")
+    }
+  })
 
   const signUp = useMutation({
     mutationFn: async (data: signupData) => {

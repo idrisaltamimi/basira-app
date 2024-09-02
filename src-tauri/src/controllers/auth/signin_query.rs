@@ -20,9 +20,9 @@ pub async fn signin_query(civil_id: u32, password: String) -> Result<Option<User
 
         if is_password_correct {
             let sql = format!(
-                "UPDATE user SET login_at = time::now(), logout_at = NULL WHERE id = '{}'",
-                &user.id
-            );
+                    "UPDATE user SET login_at = time::now(), logout_at = NULL WHERE id = '{}' AND time::floor(login_at, 1d) IS NOT time::floor(time::now(), 1d)",
+                    &user.id
+                );
             let _response: Response = db.query(sql).await?;
 
             Ok(Some(user))

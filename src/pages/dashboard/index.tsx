@@ -6,14 +6,16 @@ import { GiShoppingBag } from "react-icons/gi"
 import { IoIosSettings } from "react-icons/io"
 import { FaCartPlus } from "react-icons/fa6"
 
-import { useAuth } from "@/queries"
+import { useAuth, useUser } from "@/queries"
 import { Header } from "@/components"
 import { Button } from "@/components/ui/shadcn/button"
 import logoBg from "../../assets/logo.svg"
 import ProtectedElement from "@/components/ProtectedElement"
+import { surrealDbId } from "@/lib/utils"
 
 export default function Dashboard() {
   const { signOut } = useAuth()
+  const { userData } = useUser()
 
   return (
     <div className="relative min-h-full">
@@ -89,7 +91,7 @@ export default function Dashboard() {
       <Button
         className="absolute flex flex-col items-center justify-center w-32 h-24 gap-2 font-semibold shadow-2xl text-black/70 text-md rounded-3xl left-12 bottom-12 bg-destructive/5 hover:bg-destructive hover:text-white"
         variant={"destructive"}
-        onClick={signOut}
+        onClick={() => signOut.mutate(surrealDbId(userData?.id))}
         size="lg"
       >
         <FaSignOutAlt className="text-2xl" />
