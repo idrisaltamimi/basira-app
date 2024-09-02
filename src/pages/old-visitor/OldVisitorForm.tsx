@@ -36,7 +36,7 @@ export function OldVisitorForm() {
 
     const timer = setTimeout(() => {
       handleSearch(searchPhone)
-    }, 1500)
+    }, 500)
 
     return () => clearTimeout(timer)
   }, [searchPhone])
