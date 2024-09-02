@@ -88,7 +88,7 @@ export function formatCurrency(amount: number) {
 }
 
 // FORMAT SURREALDB ID
-export function surrealDbId(id: SurrealDbId | undefined) {
+export function surrealDbId(id: SurrealDbId | undefined): string {
   if (!id) return ""
   const table = id.tb
   const idStr = id.id.String
