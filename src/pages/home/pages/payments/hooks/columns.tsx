@@ -4,6 +4,7 @@ import { MdDeleteSweep } from "react-icons/md"
 import { Payment } from "@/types/payment"
 import { cn, formatCurrency, formatDate } from "@/lib/utils"
 import DeletePayment from "@/components/helpers/DeletePayment"
+import EditPayment from "../EditPayment"
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -69,6 +70,7 @@ export const columns: ColumnDef<Payment>[] = [
 
       return (
         <div className="flex justify-end w-full">
+          <EditPayment payment={payment} />
           <DeletePayment paymentId={payment.id}>
             <MdDeleteSweep className="text-2xl" />
           </DeletePayment>

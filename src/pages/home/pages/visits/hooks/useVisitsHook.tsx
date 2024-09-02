@@ -108,7 +108,7 @@ export function useVisitsHook() {
     {
       accessorKey: "created_at",
       header: "وقت الزيارة",
-      cell: ({ row }) => <div>{formatDate(row.getValue("created_at"), "time")}</div>
+      cell: ({ row }) => <div>{formatDate(row.getValue("created_at"), "full")}</div>
     },
     {
       accessorKey: "treatment_type",

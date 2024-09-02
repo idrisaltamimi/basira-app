@@ -31,11 +31,13 @@ pub async fn get_filtered_visits_query(
     let db = database().await?;
 
     let time_condition = match time.as_str() {
-        "today" => "time::day(created_at) == time::day(time::now())".to_string(),
-        "yesterday" => "time::day(created_at) == time::day(time::now() - 1d)".to_string(),
-        "month" => "time::month(created_at) == time::month(time::now())".to_string(),
-        "last_month" => "IF time::month(time::now()) IS 1 THEN time::month(created_at) == 12 
-            ELSE time::month(created_at) == time::month(time::now()) - 1 END"
+        "today" => "time::floor(created_at, 1d) == time::floor(time::now(), 1d)".to_string(),
+        "yesterday" => {
+            "time::floor(created_at, 1d) == time::floor(time::now() - 1d, 1d)".to_string()
+        }
+        "month" => "time::month(created_at) == time::month(time::now()) AND time::year(created_at) == time::year(time::now())".to_string(),
+        "last_month" => "IF time::month(time::now()) IS 1 THEN time::month(created_at) == 12 AND time::year(created_at) == time::year(time::now()) - 1
+            ELSE time::month(created_at) == time::month(time::now()) - 1 AND time::year(created_at) == time::year(time::now()) END"
             .to_string(),
         "all" => "true".to_string(),
         _ => return Err(anyhow::anyhow!("Invalid filter")),
