@@ -7,4 +7,5 @@ pub mod get_filtered_payments_query;
 pub mod get_payment_items_query;
 pub mod get_payments_count_query;
 pub mod get_payments_query;
+pub mod get_rebound_payments_query;
 pub mod update_payment_query;

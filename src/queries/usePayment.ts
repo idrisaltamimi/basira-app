@@ -29,6 +29,34 @@ export default function usePayment() {
     }
   })
 
+  const getReboundPaymentsVisits = useQuery({
+    queryKey: ["get_rebound_payments_visits"],
+    queryFn: async () => {
+      try {
+        const res: Payment[] = await invoke("get_rebound_payments", {
+          category: "visits"
+        })
+        return res
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
+
+  const getReboundPaymentsProducts = useQuery({
+    queryKey: ["get_rebound_payments_products"],
+    queryFn: async () => {
+      try {
+        const res: Payment[] = await invoke("get_rebound_payments", {
+          category: "products"
+        })
+        return res
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  })
+
   const getPaymentItems = useQuery({
     queryKey: ["get_payment_items"],
     queryFn: async () => {
@@ -107,7 +135,8 @@ export default function usePayment() {
         queryKey: [
           "get_unpaid_payments",
           "get_paid_payments",
-          "get_filtered_payments_query"
+          "get_filtered_payments_query",
+          "get_rebound_payments_visits"
         ]
       })
     },
@@ -156,7 +185,11 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_filtered_payments_query"]
+        queryKey: [
+          "get_unpaid_payments",
+          "get_filtered_payments_query",
+          "get_rebound_payments_visits"
+        ]
       })
     }
   })
@@ -235,6 +268,8 @@ export default function usePayment() {
     getPaymentsCount,
     createItemsPayment,
     getPaymentItems,
-    deletePaymentItem
+    deletePaymentItem,
+    getReboundPaymentsVisits,
+    getReboundPaymentsProducts
   }
 }

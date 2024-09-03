@@ -68,7 +68,9 @@ export default function useVisit() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get_visits"] })
+      queryClient.invalidateQueries({
+        queryKey: ["get_visits", "get_rebound_payments_visits", "get_unpaid_payments"]
+      })
     },
     onError: () => {
       toast({
@@ -129,7 +131,6 @@ export default function useVisit() {
   const updateVisit = useMutation({
     mutationFn: async (data: updateVisit) => {
       try {
-        console.log(data.treatment_img)
         const res = await invoke("update_visit", {
           data: {
             ...data,
