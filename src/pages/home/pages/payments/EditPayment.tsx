@@ -65,7 +65,7 @@ export default function EditPayment({ payment }: EditPaymentProps) {
       {
         onSuccess: () => {
           queryClient.refetchQueries({
-            queryKey: ["get_filtered_payments", "get_payments_count"]
+            queryKey: ["get_filtered_payments"]
           })
           toast({
             title: "تم تعديل المحاسبة بنجاح بنجاح"
@@ -133,7 +133,7 @@ export default function EditPayment({ payment }: EditPaymentProps) {
               <th className="text-start">الحساب</th>
               <th></th>
             </tr>
-            {payment.payment_items.length > 0
+            {payment.payment_items && payment.payment_items.length > 0
               ? payment.payment_items.map((item) => (
                   <tr key={item.id.id.String} className="w-full">
                     <td className="py-2">

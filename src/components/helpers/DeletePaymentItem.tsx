@@ -5,6 +5,8 @@ import { usePayment } from "@/queries"
 import { Modal } from "@/components"
 import { surrealDbId } from "@/lib/utils"
 import { SurrealDbId } from "@/lib/types"
+import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "../ui/use-toast"
 
 export default function DeleteItemPayment({
   paymentId,
@@ -15,6 +17,7 @@ export default function DeleteItemPayment({
   paymentItemId: SurrealDbId
   children: ReactNode
 }) {
+  const queryClient = useQueryClient()
   const { deletePaymentItem } = usePayment()
 
   const [open, setOpen] = useState(false)
@@ -24,7 +27,13 @@ export default function DeleteItemPayment({
     deletePaymentItem.mutate(
       { paymentId: surrealDbId(paymentId), paymentItemId: surrealDbId(paymentItemId) },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await queryClient.invalidateQueries({
+            queryKey: ["get_rebound_payments_visits", "get_unpaid_payments"]
+          })
+          toast({
+            title: "تم حذف المحاسبة"
+          })
           setOpen(false)
         }
       }

@@ -99,13 +99,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "get_unpaid_payments",
-          "get_paid_payments",
-          "get_payments",
-          "get_filtered_payments_query",
-          "get_payments_count"
-        ]
+        queryKey: ["get_unpaid_payments"]
       })
     },
     onError: () => {
@@ -132,12 +126,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "get_unpaid_payments",
-          "get_paid_payments",
-          "get_filtered_payments_query",
-          "get_rebound_payments_visits"
-        ]
+        queryKey: ["get_unpaid_payments", "get_rebound_payments_visits"]
       })
     },
     onError: (error) => {
@@ -162,11 +151,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "get_unpaid_payments",
-          "get_filtered_payments_query",
-          "get_payments_count"
-        ]
+        queryKey: ["get_filtered_payments_query"]
       })
     }
   })
@@ -191,10 +176,6 @@ export default function usePayment() {
           "get_filtered_payments_query"
         ]
       })
-
-      queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_rebound_payments_visits"]
-      })
     }
   })
 
@@ -210,11 +191,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "get_unpaid_payments",
-          "get_filtered_payments_query",
-          "get_payments_count"
-        ]
+        queryKey: ["get_filtered_payments_query"]
       })
       toast({
         title: "تم حذف المحاسبة"
@@ -243,17 +220,6 @@ export default function usePayment() {
         console.error(error)
         throw new Error(error as string)
       }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_product"]
-      })
-      queryClient.refetchQueries({
-        queryKey: ["get_filtered_payments_query", "get_payments_count"]
-      })
-      toast({
-        title: "تم حذف المحاسبة"
-      })
     },
     onError: () => {
       toast({

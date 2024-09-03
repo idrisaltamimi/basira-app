@@ -51,7 +51,7 @@ export default function AddSpending() {
       {
         onSuccess: () => {
           queryClient.refetchQueries({
-            queryKey: ["get_filtered_payments", "get_payments_count"]
+            queryKey: ["get_filtered_payments"]
           })
           toast({
             title: "تم إضافة المصاريف بنجاح"

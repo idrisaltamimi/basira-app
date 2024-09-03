@@ -42,7 +42,8 @@ export function usePaymentsHook() {
           variant: "destructive"
         })
       }
-    }
+    },
+    refetchOnMount: true
   })
 
   const table = useReactTable({

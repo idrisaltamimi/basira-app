@@ -24,7 +24,8 @@ export default function useProduct() {
       } catch (error) {
         console.error(error)
       }
-    }
+    },
+    refetchOnMount: true
   })
 
   const createProduct = useMutation({

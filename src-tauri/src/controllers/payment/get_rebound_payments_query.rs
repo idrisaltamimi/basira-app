@@ -32,7 +32,7 @@ pub async fn get_rebound_payments_query(category: String) -> Result<Vec<Payment>
                 ELSE IF visit.phone IS NOT NONE THEN <string> visit.phone
                 ELSE '' END AS visitor_phone
         FROM payment
-        WHERE pending = false AND category = '{}' ORDER BY created_at DESC LIMIT 5
+        WHERE pending = false AND time::floor(created_at, 1d) == time::floor(time::now(), 1d) AND category = '{}' ORDER BY created_at DESC LIMIT 5
         "#,
         category
     );

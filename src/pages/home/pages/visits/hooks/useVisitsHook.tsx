@@ -66,7 +66,8 @@ export function useVisitsHook() {
           variant: "destructive"
         })
       }
-    }
+    },
+    refetchOnMount: true
   })
 
   const handleChange = (e: ChangeEvent) => {
@@ -138,7 +139,7 @@ export function useVisitsHook() {
           deleteVisitById.mutate(surrealDbId(visit.id), {
             onSuccess: () => {
               queryClient.refetchQueries({
-                queryKey: ["get_visits_count", "get_filtered_visits"]
+                queryKey: ["get_filtered_visits"]
               })
             }
           })
