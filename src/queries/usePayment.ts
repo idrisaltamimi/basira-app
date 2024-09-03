@@ -187,9 +187,13 @@ export default function usePayment() {
       queryClient.invalidateQueries({
         queryKey: [
           "get_unpaid_payments",
-          "get_filtered_payments_query",
-          "get_rebound_payments_visits"
+          "get_rebound_payments_visits",
+          "get_filtered_payments_query"
         ]
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ["get_unpaid_payments", "get_rebound_payments_visits"]
       })
     }
   })

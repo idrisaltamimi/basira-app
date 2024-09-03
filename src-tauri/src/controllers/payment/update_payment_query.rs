@@ -19,27 +19,21 @@ pub async fn update_payment_query(data: UpdatePaymentData) -> Result<()> {
     let db = database().await?;
 
     let sql = format!(
-        "DELETE payment WHERE visit = {} AND pending = true",
-        &data.visit_id
-    );
-    let _response: Response = db.query(sql).await?;
-
-    let sql = format!(
-        "CREATE payment SET 
+        "UPDATE payment SET 
             payment_type = '{}', 
             name = '{}', 
             category = '{}', 
             amount = {}, 
             payment_method = '{}', 
-            visit = '{}', 
             pending = false, 
-            created_at = time::now();",
-        &data.payment_type,
-        &data.name,
-        &data.category,
-        &data.amount,
-        &data.payment_method,
-        &data.visit_id,
+            created_at = time::now()
+        WHERE visit = {};",
+        data.payment_type,
+        data.name,
+        data.category,
+        data.amount,
+        data.payment_method,
+        data.visit_id,
     );
     let _response: Response = db.query(sql).await?;
 

@@ -48,7 +48,7 @@ pub async fn get_rebound_payments_query(category: String) -> Result<Vec<Payment>
         );
         let mut payment_items_response: Response = db.query(&payment_items_sql).await?;
         let payment_items: Vec<Item> = payment_items_response.take(0)?;
-        println!("{:?}", payment_items);
+
         // Only calculate the total amount and update payment if payment_items is not empty
         if !payment_items.is_empty() {
             let total_amount: f64 = payment_items.iter().map(|item| item.amount).sum();

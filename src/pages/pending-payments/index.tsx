@@ -17,7 +17,7 @@ export default function PendingPayments() {
     getUnpaidPayments: { data },
     getReboundPaymentsVisits: { data: reboundData }
   } = usePayment()
-  console.log(reboundData)
+
   return (
     <div>
       <h1>الحسابات</h1>
