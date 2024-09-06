@@ -99,7 +99,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments"]
+        queryKey: ["get_unpaid_payments", "get_rebound_payments_products"]
       })
     },
     onError: () => {

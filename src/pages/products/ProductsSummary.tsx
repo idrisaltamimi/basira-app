@@ -16,7 +16,15 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/shadcn/select"
-import { FaMinus } from "react-icons/fa6"
+import { FaMinus, FaX } from "react-icons/fa6"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/shadcn/accordion"
+import { SurrealDbId } from "@/lib/types"
+import DeleteItemPayment from "@/components/helpers/DeletePaymentItem"
 
 type ProductsSummaryProps = {
   addedProducts: Product[]
@@ -44,8 +52,11 @@ export default function ProductsSummary({
   setFilteredProducts
 }: ProductsSummaryProps) {
   const { getVisits } = useVisit()
-  const { createProductPayments, createItemsPayment } = usePayment()
+  const { createItemsPayment, createNewPayment } = usePayment()
   const { updateProduct } = useProduct()
+  const {
+    getReboundPaymentsProducts: { data: reboundData }
+  } = usePayment()
   const [formData, setFormData] = useState(INITIAL_DATA)
 
   const groupedProducts = addedProducts.reduce(
@@ -98,7 +109,7 @@ export default function ProductsSummary({
       amount: item.amount
     }))
 
-    createProductPayments.mutate(data, {
+    createNewPayment.mutate(data, {
       onSuccess: (data) => {
         createItemsPayment.mutate({
           paymentId: surrealDbId((data as PaymentBaseType).id),
@@ -314,10 +325,59 @@ export default function ProductsSummary({
           أرسل
         </Button>
       </form>
-      {createProductPayments.isSuccess && (
-        <Notification message="تم إضافة المنتج بنجاح" />
+
+      {reboundData && reboundData.length > 0 && (
+        <Accordion
+          type="single"
+          collapsible
+          className="max-w-[800px] border rounded-3xl p-6 mx-auto shadow-sm mt-14"
+        >
+          {reboundData.map(({ visit_id, payment_items, amount, id }) => (
+            <AccordionItem
+              value={surrealDbId(visit_id as SurrealDbId)}
+              key={surrealDbId(visit_id as SurrealDbId)}
+            >
+              <AccordionTrigger className="flex items-baseline justify-start gap-2">
+                آخر محاسبة
+              </AccordionTrigger>
+              <AccordionContent className="bg-transparent">
+                <table className="w-full">
+                  <thead>
+                    <tr className="w-full border-b">
+                      <th className="py-2 text-start">نوع المحاسبة</th>
+                      <th className="py-2 text-start">السعر</th>
+                      <th className="py-2 text-start">إلغاء</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payment_items.map((item) => (
+                      <tr key={item.id.id.String} className="w-full">
+                        <td className="py-2">
+                          {item.name === "treatment_cost" ? "حساب الجلسة" : item.name}
+                        </td>
+                        <td className="py-2">{formatCurrency(item.amount)}</td>
+                        <td className="py-2">
+                          <DeleteItemPayment paymentId={id} paymentItemId={item.id}>
+                            <FaX />
+                          </DeleteItemPayment>
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className="w-full">
+                      <th className="py-2 text-start">المجموع</th>
+                      <th className="py-2 text-start" colSpan={2}>
+                        {formatCurrency(amount)}
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       )}
-      {createProductPayments.isError && <Notification message="حدث خطأ!" error />}
+      {createNewPayment.isSuccess && <Notification message="تم إضافة المنتج بنجاح" />}
+      {createNewPayment.isError && <Notification message="حدث خطأ!" error />}
     </div>
   )
 }

@@ -29,7 +29,7 @@ export default function PendingPayments() {
           </th>
           <th className="basis-16" />
           <th className="basis-[60%]">
-            <h2>تاريخ المحاسبات</h2>
+            <h2>آخر محاسبة</h2>
           </th>
         </tr>
         <tr className="flex w-full ">
