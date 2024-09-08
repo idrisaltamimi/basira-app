@@ -18,7 +18,7 @@ pub async fn delete_payment_item_query(payment_id: String, payment_item_id: Stri
     // Check if the payment item exists before deleting
     if let Some(payment_item) = result {
         // Delete the payment item
-        let delete_sql = format!("DELETE FROM payment_item WHERE id = '{}'", payment_item_id);
+        let delete_sql = format!("DELETE payment_item WHERE id = '{}'", payment_item_id);
         let _response: Response = db.query(delete_sql).await?;
 
         // If the payment item is not "فتح زيارة" or "تكلفة العلاج", update the product quantity
@@ -26,7 +26,7 @@ pub async fn delete_payment_item_query(payment_id: String, payment_item_id: Stri
             && payment_item.name != "تكلفة العلاج".to_string()
         {
             let product_sql = format!(
-                "UPDATE product SET quantity += 1, status = true WHERE product_name = '{}'",
+                "UPDATE product SET quantity += 1, sales -= 1, status = true WHERE product_name = '{}'",
                 payment_item.name
             );
             let _product_response: Response = db.query(product_sql).await?;

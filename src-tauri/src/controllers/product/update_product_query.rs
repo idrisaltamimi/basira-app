@@ -14,10 +14,11 @@ pub async fn update_product_query(data: UpdateProduct) -> Result<()> {
             product_name = '{}',
             amount = {},
             status = {},
-            quantity = {}
+            quantity = {},
+            sales = {}
           WHERE 
             id = '{}';",
-        data.product_name, data.amount, status, data.quantity, data.id
+        data.product_name, data.amount, status, data.quantity, data.sales, data.id
     );
     let _response: Response = db.query(sql).await?;
 

@@ -14,8 +14,9 @@ pub async fn create_product_query(data: CreateProduct) -> Result<()> {
             product_name = '{}',
             amount = {},
             status = {},
-            quantity = {};",
-        data.product_name, data.amount, status, data.quantity
+            quantity = {},
+            sales = {};",
+        data.product_name, data.amount, status, data.quantity, data.sales
     );
     let _response: Response = db.query(sql).await?;
 

@@ -28,10 +28,16 @@ pub async fn update_products_quantity_query(products: Vec<UpdateProduct>) -> Res
                 product_name = '{}',
                 amount = {},
                 status = {},
-                quantity = {}
+                quantity = {},
+                sales = {}
               WHERE 
                 id = '{}';",
-            product.product_name, product.amount, status, product.quantity, product.id
+            product.product_name,
+            product.amount,
+            status,
+            product.quantity,
+            product.sales,
+            product.id
         );
 
         let _response: Response = db
@@ -72,10 +78,16 @@ async fn rollback_products_update(original_products: Vec<Product>) -> Result<()>
                 product_name = '{}',
                 amount = {},
                 status = {},
-                quantity = {}
+                quantity = {},
+                sales = {}
               WHERE 
                 id = product:{};",
-            product.product_name, product.amount, status, product.quantity, product.id.id
+            product.product_name,
+            product.amount,
+            status,
+            product.quantity,
+            product.sales,
+            product.id.id
         );
 
         db.query(sql)

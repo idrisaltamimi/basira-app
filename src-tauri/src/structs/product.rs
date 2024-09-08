@@ -8,6 +8,7 @@ pub struct Product {
     pub amount: f64,
     pub status: bool,
     pub quantity: u32,
+    pub sales: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -15,6 +16,7 @@ pub struct CreateProduct {
     pub product_name: String,
     pub amount: f64,
     pub quantity: u32,
+    pub sales: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -23,4 +25,5 @@ pub struct UpdateProduct {
     pub product_name: String,
     pub amount: f64,
     pub quantity: u32,
+    pub sales: u32,
 }
