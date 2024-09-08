@@ -16,8 +16,10 @@ pub async fn signin_query(civil_id: u32, password: String) -> Result<Option<User
     let res: Option<User> = response.take(0)?;
 
     if let Some(user) = res {
+        // validate the password
         let is_password_correct = bcrypt::verify(password, &user.password).unwrap_or(false);
 
+        // update the user login time if it's the first login of the day
         if is_password_correct {
             let sql = format!(
                     "UPDATE user SET login_at = time::now(), logout_at = NULL WHERE id = '{}' AND time::floor(login_at, 1d) IS NOT time::floor(time::now(), 1d)",
@@ -38,6 +40,6 @@ pub async fn signin_query(civil_id: u32, password: String) -> Result<Option<User
 pub fn signin(civil_id: u32, password: String) -> Result<Option<User>, String> {
     match signin_query(civil_id, password) {
         Ok(user) => Ok(user),
-        Err(err) => Err(err.to_string()), // Convert Error to String
+        Err(err) => Err(err.to_string()),
     }
 }

@@ -9,7 +9,8 @@ pub async fn update_user_query(data: UpdateUserData) -> Result<Option<User>> {
     let db = database().await?;
 
     let birthdate_str = data.birthdate.to_rfc3339();
-    
+
+    // update the  password only if the user changed their password
     let sql = if let Some(password) = data.password {
         let hashed_password = bcrypt::hash(password, 10).unwrap();
         format!(

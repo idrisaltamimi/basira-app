@@ -54,7 +54,6 @@ fn main() {
             // Auth Queries
             auth::signin_query::signin,
             auth::signup_query::signup,
-            auth::get_user_query::get_user,
             auth::get_users_query::get_users,
             auth::update_user_query::update_user,
             auth::signout_query::signout,

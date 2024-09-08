@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast"
 import { User } from "@/types/user"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -28,7 +29,7 @@ export default function useAuth() {
         const res: User = await invoke("signin", { civilId, password })
         return res
       } catch (error) {
-        console.log(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: async (data) => {
@@ -36,6 +37,12 @@ export default function useAuth() {
         await queryClient.setQueryData(["userData"], data as User)
         navigate("/")
       }
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ أثناء تسجيل الدخول",
+        variant: "destructive"
+      })
     }
   })
 
@@ -45,12 +52,18 @@ export default function useAuth() {
         const res = await invoke("signout", { userId })
         return res
       } catch (error) {
-        console.log(error)
+        throw new Error(error as string)
       }
     },
     onSuccess: async () => {
       queryClient.setQueryData(["userData"], {})
       navigate("/auth")
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ أثناء تسجيل الخروج",
+        variant: "destructive"
+      })
     }
   })
 
@@ -61,6 +74,12 @@ export default function useAuth() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_users"] })
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ أثناء صنع الحساب",
+        variant: "destructive"
+      })
     }
   })
 
