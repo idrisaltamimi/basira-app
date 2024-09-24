@@ -56,7 +56,12 @@ export default function DeleteItemPayment({
       open={open}
       onOpenChange={setOpen}
       trigger={
-        <Button size={"icon"} variant={"ghost"} className="hover:text-destructive">
+        <Button
+          size={"icon"}
+          variant={"ghost"}
+          className="hover:text-destructive"
+          type="button"
+        >
           {children}
         </Button>
       }

@@ -1,0 +1,7 @@
+How to start the app?
+  1- start the surreal server as follows:
+    surreal start file:visitor.db --user root --password root
+  2- run surreal database editor:
+    surreal sql --conn http://localhost:8000 --user root --pass root --ns test --db test --pretty
+  3- start the app using:
+    npm run tauri dev
