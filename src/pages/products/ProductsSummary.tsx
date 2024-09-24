@@ -1,11 +1,11 @@
 import { formatCurrency, surrealDbId } from "@/lib/utils"
-import { usePayment, useProduct, useVisit } from "@/queries"
+import { usePayment, useVisit } from "@/queries"
 import { Button } from "@/components/ui/shadcn/button"
 import { FormEvent, useState } from "react"
 import { Label } from "@/components/ui/shadcn/label"
-import { Notification, TextField } from "@/components"
+import { Modal, TextField } from "@/components"
 import { Product } from "@/types/product"
-import { NewPayment, PaymentBaseType } from "@/types/payment"
+import { NewPayment } from "@/types/payment"
 import {
   Select,
   SelectContent,
@@ -16,15 +16,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/shadcn/select"
-import { FaMinus, FaX } from "react-icons/fa6"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/shadcn/accordion"
-import { SurrealDbId } from "@/lib/types"
-import DeleteItemPayment from "@/components/helpers/DeletePaymentItem"
+import { FaMinus } from "react-icons/fa6"
 
 type ProductsSummaryProps = {
   addedProducts: Product[]
@@ -52,12 +44,9 @@ export default function ProductsSummary({
   setFilteredProducts
 }: ProductsSummaryProps) {
   const { getVisits } = useVisit()
-  const { createItemsPayment, createNewPayment } = usePayment()
-  const { updateProduct } = useProduct()
-  const {
-    getReboundPaymentsProducts: { data: reboundData }
-  } = usePayment()
+  const { createProductPayments } = usePayment()
   const [formData, setFormData] = useState(INITIAL_DATA)
+  const [open, setOpen] = useState(false)
 
   const groupedProducts = addedProducts.reduce(
     (acc: { [key: string]: { product: Product; count: number } }, product) => {
@@ -109,37 +98,26 @@ export default function ProductsSummary({
       amount: item.amount
     }))
 
-    createNewPayment.mutate(data, {
-      onSuccess: (data) => {
-        createItemsPayment.mutate({
-          paymentId: surrealDbId((data as PaymentBaseType).id),
-          visitId: formData.name === "buyer" ? "visit:buyer" : formData.name,
-          items: itemsData
-        })
-      }
-    })
+    const updatedProducts = Object.values(groupedProducts).map(({ product, count }) => ({
+      product_id: surrealDbId(product.id),
+      count: count
+    }))
 
-    try {
-      await Promise.all(
-        Object.values(groupedProducts).map(({ product, count }) => {
-          updateProduct.mutate(
-            {
-              id: surrealDbId(product.id),
-              product_name: product.product_name,
-              amount: product.amount,
-              quantity: parseInt(product.quantity.toString()) - count
-            },
-            {
-              onError(error) {
-                console.log(error)
-              }
-            }
-          )
-        })
-      )
-    } catch (error) {
-      console.log(error)
-    }
+    createProductPayments.mutate(
+      {
+        paymentData: data,
+        paymentItems: {
+          visit_id: formData.name === "buyer" ? "visit:buyer" : formData.name,
+          items: itemsData
+        },
+        updatedProducts: updatedProducts
+      },
+      {
+        onSuccess: () => {
+          setOpen(false)
+        }
+      }
+    )
 
     setAddedProducts([])
   }
@@ -320,64 +298,29 @@ export default function ProductsSummary({
           )}
         </tfoot>
       </table>
-      <form onSubmit={handleSubmit} className="mt-6 w-[200px] flex">
-        <Button disabled={addedProducts.length <= 0} fullWidth>
-          أرسل
-        </Button>
-      </form>
-
-      {reboundData && reboundData.length > 0 && (
-        <Accordion
-          type="single"
-          collapsible
-          className="max-w-[800px] border rounded-3xl p-6 mx-auto shadow-sm mt-14"
-        >
-          {reboundData.map(({ visit_id, payment_items, amount, id }) => (
-            <AccordionItem
-              value={surrealDbId(visit_id as SurrealDbId)}
-              key={surrealDbId(visit_id as SurrealDbId)}
-            >
-              <AccordionTrigger className="flex items-baseline justify-start gap-2">
-                آخر محاسبة
-              </AccordionTrigger>
-              <AccordionContent className="bg-transparent">
-                <table className="w-full">
-                  <thead>
-                    <tr className="w-full border-b">
-                      <th className="py-2 text-start">نوع المحاسبة</th>
-                      <th className="py-2 text-start">السعر</th>
-                      <th className="py-2 text-start">إلغاء</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {payment_items.map((item) => (
-                      <tr key={item.id.id.String} className="w-full">
-                        <td className="py-2">
-                          {item.name === "treatment_cost" ? "حساب الجلسة" : item.name}
-                        </td>
-                        <td className="py-2">{formatCurrency(item.amount)}</td>
-                        <td className="py-2">
-                          <DeleteItemPayment paymentId={id} paymentItemId={item.id}>
-                            <FaX />
-                          </DeleteItemPayment>
-                        </td>
-                      </tr>
-                    ))}
-                    <tr className="w-full">
-                      <th className="py-2 text-start">المجموع</th>
-                      <th className="py-2 text-start" colSpan={2}>
-                        {formatCurrency(amount)}
-                      </th>
-                    </tr>
-                  </tbody>
-                </table>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      )}
-      {createNewPayment.isSuccess && <Notification message="تم إضافة المنتج بنجاح" />}
-      {createNewPayment.isError && <Notification message="حدث خطأ!" error />}
+      <Modal
+        title={"إنهاء المحاسبة"}
+        description={"هل تريد إنهاء وحفظ المحاسبة"}
+        open={open}
+        onOpenChange={setOpen}
+        trigger={
+          <Button disabled={addedProducts.length <= 0} fullWidth>
+            أرسل
+          </Button>
+        }
+      >
+        <form onSubmit={handleSubmit} className="flex gap-6 mt-6">
+          <Button fullWidth>نعم</Button>
+          <Button
+            variant="secondary"
+            fullWidth
+            onClick={() => setOpen(false)}
+            type="button"
+          >
+            لا
+          </Button>
+        </form>
+      </Modal>
     </div>
   )
 }

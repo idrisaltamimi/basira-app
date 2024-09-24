@@ -4,7 +4,7 @@ use surrealdb::sql::{Datetime, Thing};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Item {
     id: Thing,
-    name: String,
+    pub name: String,
     pub amount: f64,
 }
 

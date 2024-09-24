@@ -10,11 +10,15 @@ import { toast } from "../ui/use-toast"
 
 export default function DeleteItemPayment({
   paymentId,
+  visitId,
   paymentItemId,
-  children
+  children,
+  paymentItemName
 }: {
   paymentId: SurrealDbId
+  visitId: SurrealDbId
   paymentItemId: SurrealDbId
+  paymentItemName: string
   children: ReactNode
 }) {
   const queryClient = useQueryClient()
@@ -25,11 +29,16 @@ export default function DeleteItemPayment({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     deletePaymentItem.mutate(
-      { paymentId: surrealDbId(paymentId), paymentItemId: surrealDbId(paymentItemId) },
       {
-        onSuccess: async () => {
-          await queryClient.invalidateQueries({
-            queryKey: ["get_rebound_payments_visits", "get_unpaid_payments"]
+        paymentId: surrealDbId(paymentId),
+        visitId: surrealDbId(visitId),
+        paymentItemId: surrealDbId(paymentItemId),
+        paymentItemName
+      },
+      {
+        onSuccess: () => {
+          queryClient.refetchQueries({
+            queryKey: ["get_payments"]
           })
           toast({
             title: "تم حذف المحاسبة"

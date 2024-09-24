@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/use-toast"
 import { MdEdit } from "react-icons/md"
 import { Payment } from "@/types/payment"
 import DeleteItemPayment from "@/components/helpers/DeletePaymentItem"
+import { SurrealDbId } from "@/lib/types"
 
 const INITIAL_DATA: {
   amount: string
@@ -68,7 +69,7 @@ export default function EditPayment({ payment }: EditPaymentProps) {
             queryKey: ["get_filtered_payments"]
           })
           toast({
-            title: "تم تعديل المحاسبة بنجاح بنجاح"
+            title: "تم تعديل المحاسبة بنجاح"
           })
           setFormData(INITIAL_DATA)
           setIsOpen(false)
@@ -141,7 +142,12 @@ export default function EditPayment({ payment }: EditPaymentProps) {
                     </td>
                     <td className="py-2">{formatCurrency(item.amount)}</td>
                     <td className="flex justify-end py-2">
-                      <DeleteItemPayment paymentId={payment.id} paymentItemId={item.id}>
+                      <DeleteItemPayment
+                        paymentId={payment.id}
+                        visitId={payment.visit_id as SurrealDbId}
+                        paymentItemId={item.id}
+                        paymentItemName={item.name}
+                      >
                         <FaX />
                       </DeleteItemPayment>
                     </td>

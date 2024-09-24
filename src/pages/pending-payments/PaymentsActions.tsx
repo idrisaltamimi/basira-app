@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/shadcn/button"
 import { Label } from "@/components/ui/shadcn/label"
 import { formatCurrency } from "@/lib/utils"
 import { toast } from "@/components/ui/use-toast"
+import { Payment } from "@/types/payment"
 
 type PaymentsActionsProps = {
   visitId: string
   totalAmount: number
   name: string
+  setRebound: React.Dispatch<React.SetStateAction<Payment | undefined>>
 }
 
 type PaymentForm = {
@@ -29,7 +31,8 @@ const INITIAL_FORM: PaymentForm = {
 export default function PaymentsActions({
   visitId,
   totalAmount,
-  name
+  name,
+  setRebound
 }: PaymentsActionsProps) {
   const [formData, setFormData] = useState(INITIAL_FORM)
 
@@ -58,10 +61,11 @@ export default function PaymentsActions({
       },
       {
         onSuccess: async () => {
-          await closeOpenVisit.mutate(visitId)
+          closeOpenVisit.mutate(visitId)
           toast({
             title: "تم حفظ المحاسبة بنجاح"
           })
+          setRebound(undefined)
           setOpen(false)
         }
       }
@@ -84,11 +88,7 @@ export default function PaymentsActions({
         // description={"هل أنت متأكد أنه تم دفع الحساب"}
         open={open}
         onOpenChange={setOpen}
-        trigger={
-          <Button size="sm" variant="secondary">
-            إنهاء المحاسبة
-          </Button>
-        }
+        trigger={<Button size="sm">تم الدفع </Button>}
       >
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex items-center gap-4 mt-2">

@@ -33,7 +33,7 @@ export default function useVisitor() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["get_visits", "get_unpaid_payments"] })
+      queryClient.invalidateQueries({ queryKey: ["get_visits", "get_payments"] })
       toast({
         title: "تم إضافة الزائر بنجاح",
         duration: 3000

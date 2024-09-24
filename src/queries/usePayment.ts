@@ -8,61 +8,15 @@ type CreatePaymentItemData = {
   amount: number
 }
 
-type CreatePaymentItem = {
-  items: CreatePaymentItemData[]
-  visitId: string
-  paymentId: string
-}
-
 export default function usePayment() {
   const queryClient = useQueryClient()
 
   const getUnpaidPayments = useQuery({
-    queryKey: ["get_unpaid_payments"],
+    queryKey: ["get_payments"],
     queryFn: async () => {
       try {
-        const res: Payment[] = await invoke("get_payments", { pending: true })
+        const res: Payment[] = await invoke("get_payments")
         return res
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  })
-
-  const getReboundPaymentsVisits = useQuery({
-    queryKey: ["get_rebound_payments_visits"],
-    queryFn: async () => {
-      try {
-        const res: Payment[] = await invoke("get_rebound_payments", {
-          category: "visits"
-        })
-        return res
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  })
-
-  const getReboundPaymentsProducts = useQuery({
-    queryKey: ["get_rebound_payments_products"],
-    queryFn: async () => {
-      try {
-        const res: Payment[] = await invoke("get_rebound_payments", {
-          category: "products"
-        })
-        return res
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  })
-
-  const getPaymentItems = useQuery({
-    queryKey: ["get_payment_items"],
-    queryFn: async () => {
-      try {
-        // const res: PaymentItem[] = await invoke("get_payment_items", { pending: true })
-        return []
       } catch (error) {
         console.log(error)
       }
@@ -99,7 +53,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_rebound_payments_products"]
+        queryKey: ["get_payments", "get_rebound_payments_products"]
       })
     },
     onError: () => {
@@ -110,48 +64,40 @@ export default function usePayment() {
     }
   })
 
-  const createItemsPayment = useMutation({
-    mutationFn: async ({ items, visitId, paymentId }: CreatePaymentItem) => {
-      try {
-        const res = await invoke("create_payment_item", {
-          items,
-          paymentId,
-          visitId
-        })
-        return res
-      } catch (error) {
-        console.log(error)
-        throw new Error(error as string)
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["get_unpaid_payments", "get_rebound_payments_visits"]
-      })
-    },
-    onError: (error) => {
-      console.error(error)
-      toast({
-        title: "حدث خطأ عند حفظ المحاسبة",
-        variant: "destructive"
-      })
-    }
-  })
-
   const createProductPayments = useMutation({
-    mutationFn: async (data: NewPayment) => {
+    mutationFn: async ({
+      paymentData,
+      paymentItems,
+      updatedProducts
+    }: {
+      paymentData: NewPayment
+      paymentItems: { items: CreatePaymentItemData[]; visit_id: string }
+      updatedProducts: { product_id: string; count: number }[]
+    }) => {
       try {
         const res = await invoke("create_products_payments", {
-          data
+          paymentData,
+          paymentItems,
+          updatedProducts
         })
         return res
       } catch (error) {
         console.log(error)
+        throw Error(error as string)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_filtered_payments_query"]
+        queryKey: ["get_product"]
+      })
+      toast({
+        title: "تمت العملية بنجاح"
+      })
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        title: "حدث خطأ عند إجراء المحاسبة!"
       })
     }
   })
@@ -170,11 +116,7 @@ export default function usePayment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "get_unpaid_payments",
-          "get_rebound_payments_visits",
-          "get_filtered_payments_query"
-        ]
+        queryKey: ["get_payments"]
       })
     }
   })
@@ -208,13 +150,22 @@ export default function usePayment() {
   const deletePaymentItem = useMutation({
     mutationFn: async ({
       paymentId,
-      paymentItemId
+      visitId,
+      paymentItemId,
+      paymentItemName
     }: {
       paymentId: string
+      visitId: string
       paymentItemId: string
+      paymentItemName: string
     }) => {
       try {
-        const res = await invoke("delete_payment_item", { paymentId, paymentItemId })
+        const res = await invoke("delete_payment_item", {
+          paymentId,
+          visitId,
+          paymentItemId,
+          paymentItemName
+        })
         return res
       } catch (error) {
         console.error(error)
@@ -236,10 +187,6 @@ export default function usePayment() {
     deletePayment,
     createProductPayments,
     getPaymentsCount,
-    createItemsPayment,
-    getPaymentItems,
-    deletePaymentItem,
-    getReboundPaymentsVisits,
-    getReboundPaymentsProducts
+    deletePaymentItem
   }
 }

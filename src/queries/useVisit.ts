@@ -69,7 +69,7 @@ export default function useVisit() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["get_visits", "get_rebound_payments_visits", "get_unpaid_payments"]
+        queryKey: ["get_visits", "get_rebound_payments_visits", "get_payments"]
       })
     },
     onError: () => {

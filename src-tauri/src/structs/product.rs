@@ -16,7 +16,6 @@ pub struct CreateProduct {
     pub product_name: String,
     pub amount: f64,
     pub quantity: u32,
-    pub sales: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

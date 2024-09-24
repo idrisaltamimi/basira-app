@@ -118,7 +118,8 @@ body,
 }
 
 .shadow-card {
-  box-shadow: 6px 6px 40px 0px rgba(86, 144, 198, 0.2), 2px 2px 10px 0px rgba(86, 144, 198, 0.1);
+  box-shadow: 6px 6px 40px 0px rgba(86, 144, 198, 0.2),
+    2px 2px 10px 0px rgba(86, 144, 198, 0.1);
 }
 
 .shadow-card-sm {
@@ -147,7 +148,8 @@ input[type="number"] {
   opacity: 0;
   pointer-events: none;
 
-  animation: popover-enter 250ms ease-in 800ms forwards, popover-exist 250ms ease-in 3.5s forwards;
+  animation: popover-enter 250ms ease-in 800ms forwards,
+    popover-exist 250ms ease-in 3.5s forwards;
 }
 
 @keyframes popover-enter {

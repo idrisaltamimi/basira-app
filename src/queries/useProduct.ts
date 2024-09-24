@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast"
 import { Product } from "@/types/product"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/tauri"
@@ -40,6 +41,12 @@ export default function useProduct() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["get_product"] })
+    },
+    onError: () => {
+      toast({
+        title: "حدث خطأ أثناء إضافة الحساب",
+        variant: "destructive"
+      })
     }
   })
 
