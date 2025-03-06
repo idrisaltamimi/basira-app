@@ -18,6 +18,7 @@ pub async fn get_selected_visit_query(visit_id: String) -> Result<Option<Selecte
             prescription_cost,
             symptoms,
             doctor.name AS doctor_name,
+            doctor AS doctor_id,
             visitor.id AS visitor_id,
             visitor.name AS visitor_name,
             visitor.birthdate AS visitor_birthdate,
